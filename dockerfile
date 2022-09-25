@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 3333
 #CMD ["npx", "prisma", "generate"]
 #CMD ["npm", "start"]
-CMD npx prisma generate && mpm start
+CMD npx prisma generate && npm start
