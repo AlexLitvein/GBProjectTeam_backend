@@ -6,7 +6,7 @@ import { CreateBookmarkDto, EditBookmarkDto } from './dto';
 export class BookmarkService {
   constructor(private prisma: PrismaService) {}
 
-  async getBookmarks(userId: number) {
+  async getBookmarks(userId: string) {
     const bookmarks = await this.prisma.bookmark.findMany({
       where: {
         userId,
@@ -15,7 +15,7 @@ export class BookmarkService {
     return bookmarks;
   }
 
-  async createBookmark(userId: number, dto: CreateBookmarkDto) {
+  async createBookmark(userId: string, dto: CreateBookmarkDto) {
     const bookmark = await this.prisma.bookmark.create({
       data: {
         userId,
@@ -24,7 +24,7 @@ export class BookmarkService {
     });
     return bookmark;
   }
-  async getBookmarkById(userId: number, bookmarkId: number) {
+  async getBookmarkById(userId: string, bookmarkId: string) {
     const bookmark = await this.prisma.bookmark.findFirst({
       where: {
         id: bookmarkId,
@@ -35,8 +35,8 @@ export class BookmarkService {
   }
 
   async editBookmarkById(
-    userId: number,
-    bookmarkId: number,
+    userId: string,
+    bookmarkId: string,
     dto: EditBookmarkDto,
   ) {
     const bookmark = await this.prisma.bookmark.findUnique({
@@ -58,7 +58,7 @@ export class BookmarkService {
     });
   }
 
-  async deleteBookmarkById(userId: number, bookmarkId: number) {
+  async deleteBookmarkById(userId: string, bookmarkId: string) {
     const bookmark = await this.prisma.bookmark.findUnique({
       where: {
         id: bookmarkId,

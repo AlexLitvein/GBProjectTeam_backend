@@ -14,7 +14,15 @@ $ npm install
 $ npx prisma generate
 ```
 
-Запусить docker (для windows Docker desktop)
+## Модели данных для swagger, генерятся только при команде
+
+```bash
+$ npm run build
+```
+
+Документация доступна после запуска проекта по адресу http://localhost:порт/api
+
+## Запусить docker (для windows Docker desktop)
 
 ## Запуск контейнера с базой
 

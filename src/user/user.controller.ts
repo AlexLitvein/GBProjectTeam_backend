@@ -12,17 +12,15 @@ export class UserController {
 
   @Get('me')
   getMe(@GetUser() user: User) {
-    // console.log({
-    //   user: req.user,
-    // });
     return user;
   }
+
   @Patch()
-  editUser(@GetUser('id') userId: number, @Body() dto: EditUserDto) {
-    console.log({
-      userId: userId,
-      dto: dto,
-    });
+  editUser(@GetUser('id') userId: string, @Body() dto: EditUserDto) {
+    // console.log({
+    //   userId: userId,
+    //   dto: dto,
+    // });
     return this.userService.editUser(userId, dto);
   }
 }

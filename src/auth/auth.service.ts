@@ -5,6 +5,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
 import { PrismaService } from '@App/prisma/prisma.service';
 import { AuthDto } from '@App/auth/dto';
+import { TokenDto } from './dto/responses.dto';
 
 @Injectable({})
 export class AuthService {
@@ -14,7 +15,8 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signup(data: AuthDto) {
+  // async signup(data: AuthDto): Promise<TokenDto> {
+  async signup(data: AuthDto): Promise<TokenDto> {
     const hash = await argon.hash(data.passcode);
     try {
       const user = await this.prisma.user.create({
@@ -33,7 +35,7 @@ export class AuthService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new ForbiddenException('Дубликаты запрещены');
+          throw new ForbiddenException('Такой пользователь уже существует');
         }
       }
       throw error;
@@ -58,7 +60,7 @@ export class AuthService {
     return this.signToken(user.id, user.email);
   }
 
-  async signToken(userId: number, email: string) {
+  async signToken(userId: string, email: string): Promise<TokenDto> {
     const payload = {
       sub: userId,
       email,
@@ -70,6 +72,7 @@ export class AuthService {
       secret: secret,
     });
 
+    // return { access_token: token };
     return { access_token: token };
   }
 }

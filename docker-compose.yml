@@ -1,10 +1,29 @@
-version: '3.8'
+version: '3.3'
 services:
-  dev-db:
-    image: postgres:13
+  db:
+    image: mongo:5
+    container_name: mongo1
     ports:
-      - 5432:5432
+      - 27020:27017
+    volumes:
+      - ./mongo_data:/data/db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: nest
+      MONGODATA: /data/db
+    restart: always
+    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
+    healthcheck:
+      test: test $$(echo "rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"mongo1\"},{_id:1,host:\"mongo2\"},{_id:2,host:\"mongo3\"}]}).ok || rs.status().ok" | mongo --port 27020 --quiet) -eq 1
+      interval: 10s
+      start_period: 30s
+  db2:
+    image: mongo:5
+    container_name: mongo2
+    ports:
+      - 27021:27017
+    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
+  db3:
+    image: mongo:5
+    container_name: mongo3
+    ports:
+      - 27022:27017
+    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
