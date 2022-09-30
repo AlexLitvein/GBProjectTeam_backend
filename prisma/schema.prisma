@@ -55,6 +55,8 @@ model User {
   role     Role      @default(USER)
   messages Message[] @relation(name: "message")
 
+  bookmark Bookmark[]
+
   @@map("users")
 }
 
@@ -121,10 +123,23 @@ model Message {
   @@map("messages")
 }
 
-
-
 type Coordinates {
   x Int
   y Int
 }
 
+model Bookmark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?
+  link        String
+
+  // userId Int
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  @@map("bookmarks")
+}
