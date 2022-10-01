@@ -20,7 +20,7 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, select: false })
   hash: string;
 
   @Prop({ default: '' })
@@ -31,9 +31,6 @@ export class User {
 
   @Prop({ default: '' })
   patronymicName: string;
-
-  // @Prop([Bookmark]) ???
-  //   bookmarks: Bookmark[]
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
