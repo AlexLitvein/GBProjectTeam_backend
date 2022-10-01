@@ -1,29 +1,24 @@
-version: '3.3'
+version: '3.4'
+
 services:
-  db:
-    image: mongo:5
-    container_name: mongo1
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
     ports:
-      - 27020:27017
+      - 27017:27017
     volumes:
-      - ./mongo_data:/data/db
+      - ~/mongodb-data/mongo:/data/db
     environment:
-      MONGODATA: /data/db
+      - MONGO_INITDB_ROOT_USERNAME=citizix
+      - MONGO_INITDB_ROOT_PASSWORD=S3cret
+  app:
+    build: https://github.com/AlexLitvein/GBProjectTeam_backend.git#main
+    container_name: serv
+    environment:
+      DATABASE_URL: mongodb://mongodb:27017/nest
+      JWT_SECRET: my-secret
+    ports:
+      - 80:3333
     restart: always
-    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
-    healthcheck:
-      test: test $$(echo "rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"mongo1\"},{_id:1,host:\"mongo2\"},{_id:2,host:\"mongo3\"}]}).ok || rs.status().ok" | mongo --port 27020 --quiet) -eq 1
-      interval: 10s
-      start_period: 30s
-  db2:
-    image: mongo:5
-    container_name: mongo2
-    ports:
-      - 27021:27017
-    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
-  db3:
-    image: mongo:5
-    container_name: mongo3
-    ports:
-      - 27022:27017
-    entrypoint: ['/usr/bin/mongod', '--bind_ip_all', '--replSet', 'rs0']
+    links:
+      - mongodb
