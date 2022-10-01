@@ -2,16 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from '@App/user/schemas/user.shema';
+import { PrismaService } from '@App/prisma/prisma.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(
-    config: ConfigService,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) {
+  constructor(config: ConfigService, private prisma: PrismaService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -20,7 +15,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: { sub: string; email: string }) {
-    const user = await this.userModel.findOne({ _id: payload.sub });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: payload.sub,
+      },
+    });
+    delete user.hash;
+    // console.log('validate user: ', user);
     return user;
   }
 }

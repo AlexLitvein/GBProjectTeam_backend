@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   ForbiddenException,
-  UseFilters,
 } from '@nestjs/common';
 import { AuthService } from '@App/auth/auth.service';
 import { AuthDto } from '@App/auth/dto';
@@ -18,7 +17,6 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup') // конечн точка
-  // @UseFilters(MongoExceptionFilter)
   signup(@Body() dto: AuthDto): Promise<TokenDto> {
     return this.authService.signup(dto);
   }

@@ -16,4 +16,7 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+RUN npx prisma generate
+#CMD ["npm", "start"]
+#CMD npx prisma generate && npm start
 CMD npm start
