@@ -11,11 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     UserModule,
-    // MongooseModule.forRoot('mongodb://localhost:27017/nest'),
-    // MongooseModule.forRoot('mongodb://citizix:S3cret@194.87.94.182:27017', {
-    MongooseModule.forRoot('mongodb://citizix:S3cret@mongodb:27017', {
-      dbName: 'nest',
-    }),
+    MongooseModule.forRoot(process.env.DATABASE_URL, { dbName: 'nest' }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),

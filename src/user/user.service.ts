@@ -9,30 +9,19 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async editUser(userId: string, dto: EditUserDto) {
-    // console.log({
-    //   userId: userId,
-    //   dto: dto,
-    // });
+    // INFO:
+    /**
+     * [options.new=false] «Boolean» По умолчанию findOneAndUpdate() возвращает документ
+     * в том виде, в котором он был до применения обновления. Если вы установите
+     * new: true, вместо этого findOneAndUpdate() предоставит вам объект после
+     * применения обновления.
+     */
+    const user = await this.userModel
+      .findOneAndUpdate({ _id: userId }, dto, {
+        new: true,
+      })
+      .set({ updatedAt: new Date() });
 
-    const user = new this.userModel(dto);
-    // return createdCat.save();
-
-    const res = await this.userModel.updateOne({ id: userId }, user);
-
-    console.log({
-      matchedCount: res.matchedCount,
-    });
-
-    // const user = await this.prisma.user.update({
-    //   where: {
-    //     id: userId,
-    //   },
-    //   data: {
-    //     ...dto,
-    //   },
-    // });
-
-    delete user.hash;
     return user;
   }
 }
