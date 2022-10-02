@@ -24,38 +24,35 @@ enum State {
   CLOSED
 }
 
+type Coordinates {
+  x Int
+  y Int
+}
+
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  email String @unique
-  hash  String
-
-  firstName  String?
-  lastName   String?
-  middelName String?
-
-  company    String?
-  department String?
-  position   String?
-
-  avatarImage String?
-
-  ownerBy      Project[] @relation(name: "owner")
-  editorBy     Project[] @relation(name: "editor", fields: [editorById], references: [id])
-  editorById   String[]  @db.ObjectId
-  approverBy   Project[] @relation(name: "approver", fields: [approverById], references: [id])
-  approverById String[]  @db.ObjectId
-  viewerBy     Project[] @relation(name: "viewer", fields: [viewerById], references: [id])
-  viewerById   String[]  @db.ObjectId
-
-  files File[] @relation(name: "fileowner")
-
-  role     Role      @default(USER)
-  messages Message[] @relation(name: "message")
-
-  bookmark Bookmark[]
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  email        String     @unique
+  hash         String
+  firstName    String?
+  lastName     String?
+  middelName   String?
+  company      String?
+  department   String?
+  position     String?
+  avatarImage  String?
+  editorById   String[]   @db.ObjectId
+  approverById String[]   @db.ObjectId
+  viewerById   String[]   @db.ObjectId
+  ownerBy      Project[]  @relation(name: "owner")
+  editorBy     Project[]  @relation(name: "editor", fields: [editorById], references: [id])
+  approverBy   Project[]  @relation(name: "approver", fields: [approverById], references: [id])
+  viewerBy     Project[]  @relation(name: "viewer", fields: [viewerById], references: [id])
+  files        File[]     @relation(name: "fileowner")
+  messages     Message[]  @relation(name: "message")
+  role         Role       @default(USER)
+  bookmark     Bookmark[]
 
   @@map("users")
 }
@@ -69,77 +66,63 @@ model Project {
   title       String
   description String?
   status      State     @default(IN_PROGRESS)
-
-  owner       User     @relation(name: "owner", fields: [ownerId], references: [id])
-  ownerId     String   @db.ObjectId
-  editors     User[]   @relation(name: "editor", fields: [editorsId], references: [id])
-  editorsId   String[] @db.ObjectId
-  approvers   User[]   @relation(name: "approver", fields: [approversId], references: [id])
-  approversId String[] @db.ObjectId
-  viewers     User[]   @relation(name: "viewer", fields: [viewersId], references: [id])
-  viewersId   String[] @db.ObjectId
-
-  files File[] @relation(name: "file")
+  ownerId     String    @db.ObjectId
+  editorsId   String[]  @db.ObjectId
+  approversId String[]  @db.ObjectId
+  viewersId   String[]  @db.ObjectId
+  owner       User      @relation(name: "owner", fields: [ownerId], references: [id])
+  editors     User[]    @relation(name: "editor", fields: [editorsId], references: [id])
+  approvers   User[]    @relation(name: "approver", fields: [approversId], references: [id])
+  viewers     User[]    @relation(name: "viewer", fields: [viewersId], references: [id])
+  files       File[]    @relation(name: "file")
 
   // approveList: [<UserObjectId>,state]
-
   @@map("projects")
 }
 
 model File {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  fileName    String
-  filePath    String
-  description String?
-  project     Project  @relation(name: "file", fields: [projectId], references: [id])
-  projectId   String   @db.ObjectId
-  owner       User     @relation(name: "fileowner", fields: [ownerId], references: [id])
-  ownerId     String   @db.ObjectId
-  createdAt   DateTime @default(now())
-
-  // Здесь не очень понял в документации как сделать. Возможно проблема.
-  previousVersionId String? @unique @db.ObjectId
-  previousVersion   File?   @relation("version", fields: [previousVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  nextVersion       File?   @relation("version")
-  version           Int     @default(1)
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  fileName          String
+  filePath          String
+  description       String?
+  project           Project   @relation(name: "file", fields: [projectId], references: [id])
+  projectId         String    @db.ObjectId
+  owner             User      @relation(name: "fileowner", fields: [ownerId], references: [id])
+  ownerId           String    @db.ObjectId
+  createdAt         DateTime  @default(now())
+  previousVersionId String?   @unique @db.ObjectId
+  previousVersion   File?     @relation("version", fields: [previousVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nextVersion       File?     @relation("version")
+  version           Int       @default(1)
+  approveChat       Message[] @relation("filemessage")
 
   // approveFileState: [<UserObjectId>,state]
-  approveChat Message[] @relation("filemessage")
-
   @@map("files")
 }
 
 model Message {
   id                 String      @id @default(auto()) @map("_id") @db.ObjectId
-  file               File        @relation("filemessage", fields: [fileId], references: [id])
-  fileId             String      @db.ObjectId
-  user               User        @relation(name: "message", fields: [userId], references: [id])
-  userId             String      @db.ObjectId
   text               String
   approveState       State
   pageNumber         Int
   commentCoordinates Coordinates
+  fileId             String      @db.ObjectId
+  userId             String      @db.ObjectId
+  file               File        @relation("filemessage", fields: [fileId], references: [id])
+  user               User        @relation(name: "message", fields: [userId], references: [id])
 
   @@map("messages")
 }
 
-type Coordinates {
-  x Int
-  y Int
-}
-
 model Bookmark {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   title       String
   description String?
   link        String
-
-  // userId Int
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
 
   @@map("bookmarks")
 }
