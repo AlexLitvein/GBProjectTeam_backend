@@ -45,14 +45,15 @@ model User {
   editorById   String[]   @db.ObjectId
   approverById String[]   @db.ObjectId
   viewerById   String[]   @db.ObjectId
-  ownerBy      Project[]  @relation(name: "owner")
-  editorBy     Project[]  @relation(name: "editor", fields: [editorById], references: [id])
-  approverBy   Project[]  @relation(name: "approver", fields: [approverById], references: [id])
-  viewerBy     Project[]  @relation(name: "viewer", fields: [viewerById], references: [id])
-  files        File[]     @relation(name: "fileowner")
-  messages     Message[]  @relation(name: "message")
+  ownerBy      Project[]  @relation("owner")
+  editorBy     Project[]  @relation("editor", fields: [editorById], references: [id])
+  approverBy   Project[]  @relation("approver", fields: [approverById], references: [id])
+  viewerBy     Project[]  @relation("viewer", fields: [viewerById], references: [id])
+  files        File[]     @relation("file_owner")
+  messages     Message[]  @relation("message")
+  bookmark     Bookmark[] @relation("bookmark")
+  approves     Approve[]  @relation("user_approve")
   role         Role       @default(USER)
-  bookmark     Bookmark[]
 
   @@map("users")
 }
@@ -70,13 +71,13 @@ model Project {
   editorsId   String[]  @db.ObjectId
   approversId String[]  @db.ObjectId
   viewersId   String[]  @db.ObjectId
-  owner       User      @relation(name: "owner", fields: [ownerId], references: [id])
-  editors     User[]    @relation(name: "editor", fields: [editorsId], references: [id])
-  approvers   User[]    @relation(name: "approver", fields: [approversId], references: [id])
-  viewers     User[]    @relation(name: "viewer", fields: [viewersId], references: [id])
-  files       File[]    @relation(name: "file")
+  owner       User      @relation("owner", fields: [ownerId], references: [id])
+  editors     User[]    @relation("editor", fields: [editorsId], references: [id])
+  approvers   User[]    @relation("approver", fields: [approversId], references: [id])
+  viewers     User[]    @relation("viewer", fields: [viewersId], references: [id])
+  files       File[]    @relation("file")
+  approves    Approve[] @relation("project_approve")
 
-  // approveList: [<UserObjectId>,state]
   @@map("projects")
 }
 
@@ -85,18 +86,18 @@ model File {
   fileName          String
   filePath          String
   description       String?
-  project           Project   @relation(name: "file", fields: [projectId], references: [id])
+  project           Project   @relation("file", fields: [projectId], references: [id])
   projectId         String    @db.ObjectId
-  owner             User      @relation(name: "fileowner", fields: [ownerId], references: [id])
+  owner             User      @relation("file_owner", fields: [ownerId], references: [id])
   ownerId           String    @db.ObjectId
   createdAt         DateTime  @default(now())
   previousVersionId String?   @unique @db.ObjectId
   previousVersion   File?     @relation("version", fields: [previousVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   nextVersion       File?     @relation("version")
   version           Int       @default(1)
-  approveChat       Message[] @relation("filemessage")
+  approveChat       Message[] @relation("file_message")
+  approves          Approve[] @relation("file_approve")
 
-  // approveFileState: [<UserObjectId>,state]
   @@map("files")
 }
 
@@ -108,10 +109,23 @@ model Message {
   commentCoordinates Coordinates
   fileId             String      @db.ObjectId
   userId             String      @db.ObjectId
-  file               File        @relation("filemessage", fields: [fileId], references: [id])
-  user               User        @relation(name: "message", fields: [userId], references: [id])
+  file               File        @relation("file_message", fields: [fileId], references: [id])
+  user               User        @relation("message", fields: [userId], references: [id])
 
   @@map("messages")
+}
+
+model Approve {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  projectId    String  @db.ObjectId
+  fileId       String  @db.ObjectId
+  userId       String  @db.ObjectId
+  project      Project @relation("project_approve", fields: [projectId], references: [id])
+  file         File    @relation("file_approve", fields: [fileId], references: [id])
+  user         User    @relation("user_approve", fields: [userId], references: [id])
+  approveState State
+
+  @@map("approves")
 }
 
 model Bookmark {
@@ -122,7 +136,7 @@ model Bookmark {
   description String?
   link        String
   userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation("bookmark", fields: [userId], references: [id])
 
   @@map("bookmarks")
 }
