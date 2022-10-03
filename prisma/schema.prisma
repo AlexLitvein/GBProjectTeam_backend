@@ -18,10 +18,14 @@ enum Role {
 // Вот здесь надо подумать какие нам нужны состояния для проекта и чем они будут отличаться
 enum State {
   IN_PROGRESS
-  APPROV
-  NOT_APPROV
-  ARCIVED
-  CLOSED
+  ARCHIVED
+  FREEZED
+}
+
+enum Status {
+  UNDEFINED
+  ACCEPTED
+  REJECTED
 }
 
 type Coordinates {
@@ -52,7 +56,7 @@ model User {
   files        File[]     @relation("file_owner")
   messages     Message[]  @relation("message")
   bookmark     Bookmark[] @relation("bookmark")
-  approves     Approve[]  @relation("user_approve")
+  comments     Comment[]  @relation("user_comment")
   role         Role       @default(USER)
 
   @@map("users")
@@ -66,7 +70,8 @@ model Project {
   archiveAt   DateTime?
   title       String
   description String?
-  status      State     @default(IN_PROGRESS)
+  state       State     @default(IN_PROGRESS)
+  status      Status    @default(IN_PROGRESS)
   ownerId     String    @db.ObjectId
   editorsId   String[]  @db.ObjectId
   approversId String[]  @db.ObjectId
@@ -76,7 +81,7 @@ model Project {
   approvers   User[]    @relation("approver", fields: [approversId], references: [id])
   viewers     User[]    @relation("viewer", fields: [viewersId], references: [id])
   files       File[]    @relation("file")
-  approves    Approve[] @relation("project_approve")
+  comments    Comment[] @relation("project_comment")
 
   @@map("projects")
 }
@@ -95,37 +100,36 @@ model File {
   previousVersion   File?     @relation("version", fields: [previousVersionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   nextVersion       File?     @relation("version")
   version           Int       @default(1)
-  approveChat       Message[] @relation("file_message")
-  approves          Approve[] @relation("file_approve")
+  comments          Comment[] @relation("file_comment")
 
   @@map("files")
 }
 
-model Message {
+model Comment {
   id                 String      @id @default(auto()) @map("_id") @db.ObjectId
-  text               String
-  approveState       State
-  pageNumber         Int
-  commentCoordinates Coordinates
+  projectId          String      @db.ObjectId
   fileId             String      @db.ObjectId
   userId             String      @db.ObjectId
-  file               File        @relation("file_message", fields: [fileId], references: [id])
-  user               User        @relation("message", fields: [userId], references: [id])
+  project            Project     @relation("project_comment", fields: [projectId], references: [id])
+  file               File        @relation("file_comment", fields: [fileId], references: [id])
+  user               User        @relation("user_comment", fields: [userId], references: [id])
+  status             Status
+  pageNumber         Int
+  commentCoordinates Coordinates
+  commentChat        Message[]   @relation("comment_message")
 
-  @@map("messages")
+  @@map("comments")
 }
 
-model Approve {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  projectId    String  @db.ObjectId
-  fileId       String  @db.ObjectId
-  userId       String  @db.ObjectId
-  project      Project @relation("project_approve", fields: [projectId], references: [id])
-  file         File    @relation("file_approve", fields: [fileId], references: [id])
-  user         User    @relation("user_approve", fields: [userId], references: [id])
-  approveState State
+model Message {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  text    String
+  fileId  String  @db.ObjectId
+  userId  String  @db.ObjectId
+  comment Comment @relation("comment_message", fields: [fileId], references: [id])
+  user    User    @relation("message", fields: [userId], references: [id])
 
-  @@map("approves")
+  @@map("messages")
 }
 
 model Bookmark {
