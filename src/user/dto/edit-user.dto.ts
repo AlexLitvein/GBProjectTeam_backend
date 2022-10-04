@@ -1,15 +1,21 @@
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PartialType,
+} from '@nestjs/swagger';
 import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { UserDto } from './user.dto';
 
-export class EditUserDto {
+export class EditUserDto extends PartialType(
+  OmitType(UserDto, ['email', 'createdAt', 'updatedAt'] as const),
+) {
   @IsString()
-  @IsOptional()
-  firstName?: string;
-
-  @IsString()
-  @IsOptional()
-  lastName?: string;
+  firstName: string;
 
   @IsString()
-  @IsOptional()
-  patronymicName?: string;
+  lastName: string;
+
+  @IsString()
+  patronymicName: string;
 }

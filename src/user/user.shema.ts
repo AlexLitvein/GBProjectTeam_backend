@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsOptional } from 'class-validator';
 import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
@@ -14,16 +16,20 @@ export type UserDocument = User & Document;
 // INFO: timestamps автоматически добавляет и управляет createdAt, updatedAt
 @Schema({ timestamps: true })
 export class User {
+  @ApiProperty()
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ default: '' })
+  @ApiPropertyOptional()
+  @Prop({ required: false, default: '' })
   firstName: string;
 
-  @Prop({ default: '' })
+  @ApiPropertyOptional()
+  @Prop({ required: false, default: '' })
   lastName: string;
 
-  @Prop({ default: '' })
+  @ApiPropertyOptional()
+  @Prop({ required: false, default: '' })
   patronymicName: string;
 
   @Prop({ required: true, select: false })

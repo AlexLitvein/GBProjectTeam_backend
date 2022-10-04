@@ -4,9 +4,19 @@ export class ApiErrorDto {
   @ApiProperty()
   statusCode: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    oneOf: [
+      { type: 'string' },
+      {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+      },
+    ],
+  })
   message: string | string[];
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   error: string;
 }

@@ -1,3 +1,7 @@
-import { Project } from '../project.shema';
+import { OmitType } from '@nestjs/swagger';
+import { ProjectDto } from './project.dto';
 
-export class CreateProjectDto extends Project {}
+export class CreateProjectDto extends OmitType(ProjectDto, [
+  'createdAt',
+  'updatedAt',
+] as const) {}
