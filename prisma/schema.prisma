@@ -113,7 +113,7 @@ model Comment {
   project            Project     @relation("project_comment", fields: [projectId], references: [id])
   file               File        @relation("file_comment", fields: [fileId], references: [id])
   user               User        @relation("user_comment", fields: [userId], references: [id])
-  status             Status
+  status             Status      @default(IN_PROGRESS)
   pageNumber         Int
   commentCoordinates Coordinates
   commentChat        Message[]   @relation("comment_message")
