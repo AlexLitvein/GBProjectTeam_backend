@@ -2,11 +2,10 @@ import { ForbiddenException, Injectable, UseFilters } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { AuthDto } from '@App/auth/dto';
-import { TokenDto } from './dto/responses.dto';
+import { AuthDto, TokenDto } from 'auth/dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '@App/user/user.shema';
+import { User, UserDocument } from 'user/user.shema';
 
 @Injectable({})
 export class AuthService {

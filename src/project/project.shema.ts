@@ -1,5 +1,4 @@
-import { ProjectStatus } from '@App/types';
-import { User } from '@App/user/user.shema';
+import { ProjectStatus } from 'types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import {
@@ -42,6 +41,9 @@ export class Project {
   @IsOptional()
   @Prop({ default: ProjectStatus.IN_PROGRESS })
   status: ProjectStatus;
+
+  @Prop({ select: false })
+  __v: number;
 }
 
 export const projectProxy = new Proxy<Project>({} as Project, {
