@@ -4,7 +4,7 @@ import { AuthController } from '@App/auth/auth.controller';
 import { AuthService } from '@App/auth/auth.service';
 import { JwtStrategy } from '@App/auth/strategy';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '@App/user/schemas/user.shema';
+import { User, UserSchema } from '@App/user/user.shema';
 
 @Module({
   imports: [

@@ -18,7 +18,6 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup') // конечн точка
-  // @UseFilters(MongoExceptionFilter)
   signup(@Body() dto: AuthDto): Promise<TokenDto> {
     return this.authService.signup(dto);
   }

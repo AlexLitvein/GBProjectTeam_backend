@@ -3,7 +3,7 @@ import { GetUser } from '@App/auth/decorator/get-user.decorator';
 import { JwtGuard } from '@App/auth/guard';
 import { EditUserDto } from './dto';
 import { UserService } from './user.service';
-import { User } from './schemas/user.shema';
+import { User } from './user.shema';
 
 @UseGuards(JwtGuard)
 @Controller('users')

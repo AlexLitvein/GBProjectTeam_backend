@@ -6,7 +6,7 @@ import { AuthDto } from '@App/auth/dto';
 import { TokenDto } from './dto/responses.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '@App/user/schemas/user.shema';
+import { User, UserDocument } from '@App/user/user.shema';
 
 @Injectable({})
 export class AuthService {
@@ -40,6 +40,21 @@ export class AuthService {
       // INFO: поле hash помечено как невыбираемое в схеме, но можно выбрать так) или так .select('+hash');
       .select({ hash: 1 });
 
+    /**
+       INFO:
+     * Глобальный фильтр исключений, обрабатывает исключения типа HttpException 
+     * (и его подклассы). Если исключение нераспознано (не является ни HttpException, 
+     * ни классом, наследующим от HttpException), встроенный фильтр исключений генерирует 
+     * следующий ответ JSON по умолчанию:
+     * {
+     *  "statusCode": 500,
+     *  "message": "Internal server error"
+     * }
+     * Глобальный фильтр исключений частично поддерживает библиотеку http-errors. 
+     * В основном, любое брошенное исключение, содержащее свойства statusCode и message, 
+     * будет правильно распознано и отправлено обратно в качестве ответа.
+     * Фильтры исключений могут быть использованы по-разному: на методах, на контроллерах или глобально.
+     */
     if (!user) {
       throw new ForbiddenException('Неверные входные данные');
     }

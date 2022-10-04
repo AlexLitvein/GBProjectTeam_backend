@@ -4,24 +4,18 @@ import { Document } from 'mongoose';
 export type UserDocument = User & Document;
 
 /**
+   INFO:
  * https://docs.nestjs.com/techniques/mongodb
  * Декоратор @Schema() помечает класс как определение схемы. Он сопоставляет наш
- * Catкласс с коллекцией MongoDB с тем же именем, но с дополнительной буквой «s» в
+ * Cat класс с коллекцией MongoDB с тем же именем, но с дополнительной буквой «s» в
  * конце, поэтому окончательное имя коллекции mongo будет cats.
  */
-@Schema()
+
+// INFO: timestamps автоматически добавляет и управляет createdAt, updatedAt
+@Schema({ timestamps: true })
 export class User {
-  @Prop({ default: Date.now() })
-  createdAt: string;
-
-  @Prop({ default: Date.now() })
-  updatedAt: string;
-
   @Prop({ required: true, unique: true })
   email: string;
-
-  @Prop({ required: true, select: false })
-  hash: string;
 
   @Prop({ default: '' })
   firstName: string;
@@ -31,6 +25,9 @@ export class User {
 
   @Prop({ default: '' })
   patronymicName: string;
+
+  @Prop({ required: true, select: false })
+  hash: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
