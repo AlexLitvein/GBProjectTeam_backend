@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EditUserDto } from './dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './schemas/user.shema';
+import { User, UserDocument } from './user.shema';
 
 @Injectable()
 export class UserService {
@@ -16,11 +16,10 @@ export class UserService {
      * new: true, вместо этого findOneAndUpdate() предоставит вам объект после
      * применения обновления.
      */
-    const user = await this.userModel
-      .findOneAndUpdate({ _id: userId }, dto, {
-        new: true,
-      })
-      .set({ updatedAt: new Date() });
+    const user = await this.userModel.findOneAndUpdate({ _id: userId }, dto, {
+      new: true,
+    });
+    // .set({ updatedAt: new Date() });
 
     return user;
   }

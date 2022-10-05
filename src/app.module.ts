@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from '@App/auth/auth.module';
-import { UserModule } from '@App/user/user.module';
+import { AuthModule } from 'auth/auth.module';
+import { UserModule } from 'user/user.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+    ProjectModule,
   ],
 })
 export class AppModule {}
