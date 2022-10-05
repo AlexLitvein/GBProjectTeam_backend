@@ -37,7 +37,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, options);
-  writeFile('./test.api.json', JSON.stringify(document));
+  // INFO: сохранить данные свагера например для импорта в постман
+  // writeFile('./test.api.json', JSON.stringify(document));
 
   await app.listen(3333);
 }
