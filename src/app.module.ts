@@ -6,6 +6,8 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectModule } from './project/project.module';
+import { StorageService } from './storage/storage.service';
+// import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -14,9 +16,11 @@ import { ProjectModule } from './project/project.module';
     UserModule,
     MongooseModule.forRoot(process.env.DATABASE_URL, { dbName: 'nest' }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
+      rootPath: join(__dirname, '../..', 'public'),
     }),
     ProjectModule,
+    // StorageModule,
   ],
+  providers: [StorageService],
 })
 export class AppModule {}
