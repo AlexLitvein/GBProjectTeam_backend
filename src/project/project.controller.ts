@@ -6,10 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto, UpdateProjectDto } from 'project/dto';
-// import { UpdateProjectDto } from './dto/update-project.dto';
 import {
   ApiBody,
   ApiExtraModels,
@@ -21,6 +22,9 @@ import {
 import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
 import { ProjectDto } from './dto/project.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { UploadFilesResultDto } from 'storage/dto/upload.dto';
+import { type } from 'os';
 
 @ApiExtraModels(ProjectDto, ApiErrorDto)
 @ApiTags('projects')
@@ -33,9 +37,21 @@ import { ProjectDto } from './dto/project.dto';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  // INFO: Дб выше @Get(':id')
+  // @Get('fileslist')
+  // getFilesList() {
+  //   return this.projectService.getFilesList();
+  // }
+
+  // @Get('files')
+  // getFileOne(@Body() body: { fileNames: string[] }) {
+  //   return this.projectService.getFileOne(body.fileNames);
+  // }
+
   // ======== create ==========
   @ApiBody({
-    description: 'Создание проекта документов',
+    description:
+      'Создание проекта документов. Перед отправкой запроса на создание/обновление пакета документов нужно загрузить прикрепленные файлы в хранилище и по результату этой операции, отправить нужный запрос.',
     type: CreateProjectDto,
   })
   @ApiResponse({
@@ -99,6 +115,39 @@ export class ProjectController {
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
     return this.projectService.update(id, updateProjectDto);
+  }
+
+  // ======== uploadFiles ==========
+  @ApiOperation({
+    description: 'Загрузить файлы в хранилище',
+  })
+  @ApiBody({
+    description: 'Content-Type: multipart/form-data',
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Возвращается объект с массивом путей файлов в хранилище',
+    type: UploadFilesResultDto,
+  })
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('files'))
+  uploadFiles(
+    @UploadedFiles()
+    files: Array<Express.Multer.File>,
+  ) {
+    return this.projectService.upload(files);
   }
 
   // @Delete(':id')

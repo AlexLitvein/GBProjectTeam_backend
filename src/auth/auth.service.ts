@@ -77,6 +77,6 @@ export class AuthService {
       secret: secret,
     });
 
-    return { access_token: token };
+    return { token: token };
   }
 }

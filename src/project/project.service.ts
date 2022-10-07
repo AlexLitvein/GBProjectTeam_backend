@@ -1,13 +1,19 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  StreamableFile,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateProjectDto, UpdateProjectDto } from 'project/dto';
+import { StorageService } from 'storage/storage.service';
 import { Project, ProjectDocument, projectProxy } from './project.shema';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+    private storage: StorageService,
   ) {}
 
   async create(createProjectDto: CreateProjectDto) {
@@ -44,6 +50,41 @@ export class ProjectService {
       },
     );
   }
+
+  async upload(files: Array<Express.Multer.File>) {
+    const maxSize = 2 ** 16;
+    const errors: string[] = [];
+
+    files.forEach((el) => {
+      if (el.size > maxSize) {
+        errors.push(
+          `Размер файла ${el.originalname} больше допустимого (${
+            maxSize / 1024
+          } КБ)`,
+        );
+      }
+
+      if (!/(pdf|doc|jpg|png)/.test(el.mimetype)) {
+        errors.push(
+          `Недопустимый тип файла ${el.originalname}, требуется (pdf,doc,jpg,png)`,
+        );
+      }
+    });
+
+    if (errors.length) throw new BadRequestException(errors);
+
+    return this.storage.upload(files);
+  }
+
+  // async getFilesList() {
+  //   const data = await this.storage.list();
+  //   return data.map((el) => ({ name: el.Key, size: el.Size }));
+  // }
+
+  // async getFileOne(fileNames: string[]) {
+  //   fileNames.forEach((el) => {});
+  //   return null;
+  // }
 
   // remove(id: number) {
   //   return `This action removes a #${id} project`;

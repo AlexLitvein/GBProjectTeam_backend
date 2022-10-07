@@ -1,4 +1,14 @@
-import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Patch,
+  Post,
+  UploadedFile,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiResponse,

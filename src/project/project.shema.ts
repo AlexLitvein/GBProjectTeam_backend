@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayUnique,
+  IsArray,
   IsEnum,
   IsMongoId,
   IsOptional,
@@ -25,10 +26,17 @@ export class Project {
   @Prop({ default: '' })
   description: string;
 
+  @ApiProperty()
+  @IsArray()
+  @ArrayUnique()
+  @Prop({ type: Array<string> })
+  attachedFilePaths: string[];
+
   // docs: Doc[];
 
   @ApiProperty()
   @IsMongoId({ each: true })
+  @IsArray()
   @ArrayUnique()
   @Prop({
     required: true,

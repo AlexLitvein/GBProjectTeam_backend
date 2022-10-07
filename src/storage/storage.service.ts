@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   GetObjectCommand,
   ListObjectsCommand,
   ListObjectsCommandOutput,
   PutObjectCommand,
+  PutObjectCommandOutput,
+  PutObjectOutput,
   S3Client,
-  _Object,
 } from '@aws-sdk/client-s3';
-import path from 'path';
-import fs from 'fs';
 
 @Injectable()
 export class StorageService {
@@ -24,70 +23,64 @@ export class StorageService {
         secretAccessKey: 'YCPRd7kCSX7f_MBGxO1EvWgE_rFF87pqhnV6DhES',
       },
     };
-
     this.s3Client = new S3Client(credentials);
   }
 
-  async upload(file) {
-    // files: Array<Express.Multer.File>
-    console.log('upload');
-
-    // const file = path.join(__dirname, '../..', 'src/user/user.shema.ts');
-    // console.log({
-    //   file_log: file,
-    // });
-
-    // INFO: чтобы нест видел внешние модули???, добавить в tsconfig.json - "esModuleInterop": true
-    const fileStream = fs.createReadStream(file);
-
+  private async uploadOne(file: Express.Multer.File) {
     const uploadParams = {
       Bucket: this.buckedName,
-      // Add the required 'Key' parameter using the 'path' module.
-      Key: path.basename(file),
-      // Add the required 'Body' parameter
-      Body: fileStream,
+      Key: file.originalname,
+      Body: file.buffer,
     };
-
-    try {
-      const data = await this.s3Client.send(new PutObjectCommand(uploadParams));
-
-      console.log({
-        upload_data_Success: data,
-      });
-
-      return data;
-    } catch (err) {
-      console.log('Error', err);
-    }
+    // const res: PutObjectCommandOutput = await this.s3Client.send(new PutObjectCommand(uploadParams));
+    // console.log({
+    //   res_log: res.,
+    // });
+    return await this.s3Client.send(new PutObjectCommand(uploadParams));
   }
 
-  async download(file) {
-    console.log('download');
+  async upload(files: Array<Express.Multer.File>) {
+    const res: string[] = [];
+    try {
+      files.forEach((el) => {
+        this.uploadOne(el);
+        res.push(
+          `https://storage.yandexcloud.net/${this.buckedName}/${el.originalname}`,
+        );
+      });
+    } catch (error) {
+      throw new BadRequestException('Не удалось загрузить файлы');
+    }
+    return res;
+  }
 
-    const bucketParamsGet = {
-      Bucket: this.buckedName,
-      Key: 'test.api.json',
-    };
-
-    const streamToString = (stream) =>
+  private async downloadOne(fileName: string) {
+    const streamToString: { (stream: any): Promise<Buffer> } = (stream) =>
       new Promise((resolve, reject) => {
         const chunks = [];
         stream.on('data', (chunk) => chunks.push(chunk));
         stream.on('error', reject);
-        stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+        stream.on('end', () => resolve(Buffer.concat(chunks)));
       });
 
     try {
       const data = await this.s3Client.send(
-        new GetObjectCommand(bucketParamsGet),
+        new GetObjectCommand({
+          Bucket: this.buckedName,
+          Key: fileName,
+        }),
       );
-      // return data; // For unit tests.
-      // Convert the ReadableStream to a string.
-      const bodyContents = await streamToString(data.Body);
-      console.log(bodyContents);
-      return bodyContents;
+      return streamToString(data.Body);
     } catch (err) {
-      console.log('Error', err);
+      throw new BadRequestException('Не удалось получить файл');
+    }
+  }
+
+  async download(fileNames: string[]) {
+    try {
+      return null;
+    } catch (err) {
+      throw new BadRequestException('Не удалось получить файл');
     }
   }
 
@@ -98,7 +91,7 @@ export class StorageService {
       );
       return data.Contents;
     } catch (err) {
-      console.log('Error', err);
+      throw new BadRequestException('Не удалось загрузить список файлов');
     }
   }
 }
