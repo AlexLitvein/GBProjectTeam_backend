@@ -27,12 +27,14 @@ export class Project {
   description: string;
 
   @ApiProperty()
+  @IsMongoId({ each: true })
   @IsArray()
   @ArrayUnique()
-  @Prop({ type: Array<string> })
-  attachedFilePaths: string[];
-
-  // docs: Doc[];
+  @Prop({
+    required: true,
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Docum' }],
+  })
+  documentsIds: ObjectId[];
 
   @ApiProperty()
   @IsMongoId({ each: true })

@@ -16,29 +16,32 @@ export class ProjectService {
     private storage: StorageService,
   ) {}
 
+  private async _find(filter: Object) {
+    // INFO: выбрать все кроме почты
+    // .populate({ path: 'coordinationUsers', select: '-email' });
+    return this.projectModel
+      .find(filter)
+      .populate({
+        path: projectProxy.coordinationUsersIds.toString(),
+        select: ['firstName', 'lastName'],
+      })
+      .populate({
+        path: projectProxy.documentsIds.toString(),
+        select: ['attachedFileName'],
+      });
+  }
+
   async create(createProjectDto: CreateProjectDto) {
     const project = new this.projectModel(createProjectDto);
     return await project.save();
   }
 
   async findAll() {
-    return (
-      this.projectModel
-        .find()
-        // INFO: выбрать все кроме почты
-        // .populate({ path: 'coordinationUsers', select: '-email' });
-        .populate({
-          path: projectProxy.coordinationUsersIds.toString(),
-          select: ['firstName', 'lastName'],
-        })
-    );
+    return this._find({});
   }
 
   findOne(id: ObjectId) {
-    return this.projectModel.find({ _id: id }).populate({
-      path: projectProxy.coordinationUsersIds.toString(),
-      select: ['firstName', 'lastName'],
-    });
+    return this._find({ _id: id });
   }
 
   async update(id: ObjectId, updateProjectDto: UpdateProjectDto) {
