@@ -2,8 +2,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import fs from 'fs';
-import { writeFile } from 'node:fs/promises';
 
 const options = {
   swaggerOptions: {
