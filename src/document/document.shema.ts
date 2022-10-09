@@ -28,7 +28,16 @@ export class Docum {
   @Prop({ default: '' })
   attachedFileName: string;
 
-  // comments: Comment [ ]
+  // @ApiProperty()
+  // @IsMongoId({ each: true })
+  // @IsArray()
+  // @ArrayUnique()
+  // @IsOptional()
+  // @Prop({
+  //   required: true,
+  //   type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+  // })
+  // commentsIds: ObjectId[];
 
   @ApiProperty({ required: false, enum: DocumentStatus })
   @IsEnum(DocumentStatus)

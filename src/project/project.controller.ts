@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto, UpdateProjectDto } from 'project/dto';
+import { CreateProjectDto, UpdateProjectDto, ProjectDto } from 'project/dto';
 import {
   ApiBody,
   ApiExtraModels,
@@ -21,10 +21,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
-import { ProjectDto } from './dto/project.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadFilesResultDto } from 'storage/dto/upload.dto';
-import { type } from 'os';
 
 @ApiExtraModels(ProjectDto, ApiErrorDto)
 @ApiTags('projects')
@@ -41,11 +39,6 @@ export class ProjectController {
   // @Get('fileslist')
   // getFilesList() {
   //   return this.projectService.getFilesList();
-  // }
-
-  // @Get('files')
-  // getFileOne(@Body() body: { fileNames: string[] }) {
-  //   return this.projectService.getFileOne(body.fileNames);
   // }
 
   // ======== create ==========
