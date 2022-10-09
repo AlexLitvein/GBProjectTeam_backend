@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectModule } from 'project/project.module';
 import { StorageService } from 'storage/storage.service';
 import { DocumentModule } from 'document/document.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { DocumentModule } from 'document/document.module';
     }),
     ProjectModule,
     DocumentModule,
+    ChatModule,
   ],
-  providers: [StorageService], //, DocumentService
+  providers: [StorageService],
 })
 export class AppModule {}

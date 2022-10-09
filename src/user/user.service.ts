@@ -7,10 +7,7 @@ import { StorageService } from 'storage/storage.service';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) // private storage: StorageService,
-  {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async editUser(userId: string, dto: EditUserDto) {
     // const res = await this.storage.list();
