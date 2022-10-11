@@ -15,9 +15,14 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { OnModuleInit } from '@nestjs/common';
 
-@WebSocketGateway()
-export class ChatGateway implements OnGatewayConnection {
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
+export class ChatGateway implements OnGatewayConnection, OnModuleInit {
   @WebSocketServer()
   server: Server;
   constructor(
@@ -27,15 +32,23 @@ export class ChatGateway implements OnGatewayConnection {
     private readonly configService: ConfigService,
   ) {}
 
+  async onModuleInit() {
+    console.log(`The module has been initialized.`);
+
+    this.server.on('connection', function (socket) {
+      console.log({
+        server_on_connection: socket.id,
+        socket_handshake_auth: socket.handshake.auth,
+      });
+    });
+  }
+
   async handleConnection(client: Socket) {
     try {
       // INFO:  { sub: '63393710a6ca510e36fdd894', iat: 1665299356, exp: 1665899296 }
-      const payload = this.jwtService.verify(
-        client.handshake.headers.authorization,
-        {
-          secret: this.configService.get('JWT_SECRET'),
-        },
-      );
+      const payload = this.jwtService.verify(client.handshake.auth.token, {
+        secret: this.configService.get('JWT_SECRET'),
+      });
 
       const user = await this.userModel.findOne({ _id: payload.sub });
       if (!user) {
@@ -43,9 +56,18 @@ export class ChatGateway implements OnGatewayConnection {
       }
 
       client.on('room', function (room) {
+        console.log({
+          client_join_room: room,
+        });
+
         client.join(room);
+
+        this.server
+          .to(room as unknown as string)
+          .emit('join-to-room', `join to room: ${room}`);
       });
     } catch (error) {
+      console.log('client.disconnect()');
       client.disconnect();
     }
   }
@@ -63,12 +85,4 @@ export class ChatGateway implements OnGatewayConnection {
 
     return message;
   }
-
-  //   @SubscribeMessage('request_all_messages')
-  //   async requestAllMessages(@ConnectedSocket() socket: Socket) {
-  //     await this.chatService.getUserFromSocket(socket);
-  //     const messages = await this.chatService.getAllMessages();
-
-  //     socket.emit('send_all_messages', messages);
-  //   }
 }
