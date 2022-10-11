@@ -32,10 +32,6 @@ export class StorageService {
       Key: file.originalname,
       Body: file.buffer,
     };
-    // const res: PutObjectCommandOutput = await this.s3Client.send(new PutObjectCommand(uploadParams));
-    // console.log({
-    //   res_log: res.,
-    // });
     return await this.s3Client.send(new PutObjectCommand(uploadParams));
   }
 

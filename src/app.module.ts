@@ -17,7 +17,7 @@ import { ChatModule } from './chat/chat.module';
     UserModule,
     MongooseModule.forRoot(process.env.DATABASE_URL, { dbName: 'nest' }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../..', 'public'), // '..'
+      rootPath: join(__dirname, '..', 'public'),
     }),
     ProjectModule,
     DocumentModule,

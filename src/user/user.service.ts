@@ -10,11 +10,6 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async editUser(userId: string, dto: EditUserDto) {
-    // const res = await this.storage.list();
-    // res.forEach((el) => {
-    //   console.log(`Name: ${el.Key}, Size: ${el.Size}`);
-    // });
-
     // INFO:
     /**
      * [options.new=false] «Boolean» По умолчанию findOneAndUpdate() возвращает документ
