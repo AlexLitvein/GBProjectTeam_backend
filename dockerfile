@@ -9,7 +9,7 @@ ENV PATH ./node_modules/.bin:$PATH
 ADD package.json /tmp/package.json
 RUN cd /tmp && npm install
 # RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
-RUN cp -a /tmp/node_modules .
+RUN cd .. && cp -a /tmp/node_modules .
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
