@@ -24,6 +24,9 @@ const options = {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: '*',
+  });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   const config = new DocumentBuilder()
@@ -31,7 +34,6 @@ async function bootstrap() {
     .setTitle('GBProjectTeam')
     .setDescription('The API description')
     .setVersion('1.0')
-    // .addTag('backend')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, options);

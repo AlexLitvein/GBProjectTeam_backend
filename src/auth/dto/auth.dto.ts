@@ -10,5 +10,5 @@ export class AuthDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  passcode: string;
+  password: string;
 }

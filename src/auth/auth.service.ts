@@ -16,7 +16,7 @@ export class AuthService {
   ) {}
 
   async signup(data: AuthDto): Promise<TokenDto> {
-    const hash = await argon.hash(data.passcode);
+    const hash = await argon.hash(data.password);
     const user = new this.userModel({
       email: data.email,
       hash,
@@ -57,7 +57,7 @@ export class AuthService {
     if (!user) {
       throw new ForbiddenException('Неверные входные данные');
     }
-    const passMatch = await argon.verify(user.hash, data.passcode);
+    const passMatch = await argon.verify(user.hash, data.password);
     if (!passMatch) {
       throw new ForbiddenException('Неверный пароль');
     }
