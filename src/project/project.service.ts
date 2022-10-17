@@ -12,10 +12,12 @@ import { Project, ProjectDocument, projectProxy } from './project.shema';
 @Injectable()
 export class ProjectService {
   constructor(
-    @InjectModel(Project.name, 'nest') private projectModel: Model<ProjectDocument>,
+    @InjectModel(Project.name, 'nest')
+    private projectModel: Model<ProjectDocument>,
     private storage: StorageService,
-  ) { }
+  ) {}
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private async _find(filter: Object) {
     // INFO: выбрать все кроме почты
     // .populate({ path: 'coordinationUsers', select: '-email' });
@@ -61,7 +63,8 @@ export class ProjectService {
     files.forEach((el) => {
       if (el.size > maxSize) {
         errors.push(
-          `Размер файла ${el.originalname} больше допустимого (${maxSize / 1024
+          `Размер файла ${el.originalname} больше допустимого (${
+            maxSize / 1024
           } КБ)`,
         );
       }

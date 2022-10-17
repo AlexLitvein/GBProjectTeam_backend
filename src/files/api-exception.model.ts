@@ -1,5 +1,4 @@
-
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ApiException {
   @ApiPropertyOptional() statusCode?: number;

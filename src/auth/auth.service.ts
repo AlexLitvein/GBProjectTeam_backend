@@ -13,7 +13,7 @@ export class AuthService {
     @InjectModel(User.name, 'nest') private userModel: Model<UserDocument>,
     private jwt: JwtService,
     private config: ConfigService,
-  ) { }
+  ) {}
 
   // ======== signup ==========
   async signup(data: AuthDto): Promise<TokenDto> {

@@ -7,7 +7,9 @@ import { StorageService } from 'storage/storage.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name, 'nest') private userModel: Model<UserDocument>) { }
+  constructor(
+    @InjectModel(User.name, 'nest') private userModel: Model<UserDocument>,
+  ) {}
 
   async editUser(userId: string, dto: EditUserDto) {
     // INFO:
