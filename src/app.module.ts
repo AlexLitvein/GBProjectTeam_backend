@@ -16,8 +16,14 @@ import { FilesModule } from './files/files.module';
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     UserModule,
-    MongooseModule.forRoot(process.env.DATABASE_URL, { dbName: 'nest', connectionName: 'nest', }),
-    MongooseModule.forRoot(process.env.DATABASE_URL, { dbName: 'files', connectionName: 'files', }),
+    MongooseModule.forRoot(process.env.DATABASE_URL, {
+      dbName: 'nest',
+      connectionName: 'nest',
+    }),
+    MongooseModule.forRoot(process.env.DATABASE_URL, {
+      dbName: 'files',
+      connectionName: 'files',
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
@@ -28,4 +34,4 @@ import { FilesModule } from './files/files.module';
   ],
   providers: [StorageService],
 })
-export class AppModule { }
+export class AppModule {}

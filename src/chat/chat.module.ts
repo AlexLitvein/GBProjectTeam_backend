@@ -9,7 +9,10 @@ import { ChatGateway } from './chat.gateway';
   imports: [
     CommentModule,
     JwtModule.register({}),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }], 'nest'),
+    MongooseModule.forFeature(
+      [{ name: User.name, schema: UserSchema }],
+      'nest',
+    ),
   ],
   providers: [ChatGateway],
 })
