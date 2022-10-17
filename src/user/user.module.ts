@@ -14,7 +14,7 @@ import { StorageService } from 'storage/storage.service';
    * в exports раздел CatsModule и импортируйте CatsModule в другой модуль.
    */
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }], 'nest'),
     // StorageModule,
   ],
   controllers: [UserController],

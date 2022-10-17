@@ -7,7 +7,7 @@ import { CreateDocumentDto, UpdateDocumentDto } from './dto';
 @Injectable()
 export class DocumentService {
   constructor(
-    @InjectModel(Docum.name) private documModel: Model<DocumDocument>,
+    @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
   ) {}
 
   async create(createDocumentDto: CreateDocumentDto) {

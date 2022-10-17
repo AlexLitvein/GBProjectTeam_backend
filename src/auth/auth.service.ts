@@ -10,10 +10,10 @@ import { User, UserDocument } from 'user/user.shema';
 @Injectable({})
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(User.name, 'nest') private userModel: Model<UserDocument>,
     private jwt: JwtService,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   async signup(data: AuthDto): Promise<TokenDto> {
     const hash = await argon.hash(data.password);

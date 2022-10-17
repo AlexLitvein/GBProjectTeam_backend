@@ -12,7 +12,7 @@ import { Comment, CommentDocument, commentProxy } from './comment.shema';
 @Injectable()
 export class CommentService {
   constructor(
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @InjectModel(Comment.name, 'nest') private commentModel: Model<CommentDocument>,
   ) {}
 
   // private async _find(filter: Object) {
