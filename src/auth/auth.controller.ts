@@ -1,6 +1,6 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from 'auth/auth.service';
-import { AuthDto, TokenDto } from 'auth/dto';
+import { AuthDto, AuthResponse, TokenDto } from 'auth/dto';
 import {
   ApiBody,
   ApiExtraModels,
@@ -9,17 +9,20 @@ import {
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { RegistrationDto } from './dto/registration.dto';
 
 @ApiTags('Регистрация/Авторизация')
+// @ApiExtraModels(AuthResponse)
 @Controller('auth') // маршрут
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  // ======== signup ==========
   @ApiOperation({
     description: 'Регистрация',
   })
   @ApiBody({
-    type: AuthDto,
+    type: RegistrationDto,
   })
   @ApiResponse({
     status: 201,
@@ -27,10 +30,11 @@ export class AuthController {
     type: TokenDto,
   })
   @Post('signup') // конечн точка
-  signup(@Body() dto: AuthDto): Promise<TokenDto> {
+  signup(@Body() dto: RegistrationDto): Promise<TokenDto> {
     return this.authService.signup(dto);
   }
 
+  // ======== signin ==========
   @ApiOperation({
     description: 'Авторизация',
   })
@@ -40,7 +44,8 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Successfully access',
-    type: TokenDto,
+    // type: TokenDto,
+    type: AuthResponse,
   })
   @HttpCode(HttpStatus.OK)
   @Post('signin')

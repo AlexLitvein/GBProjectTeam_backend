@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, UseFilters } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { AuthDto, TokenDto } from 'auth/dto';
+import { AuthDto, AuthResponse, TokenDto } from 'auth/dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'user/user.shema';
@@ -15,10 +15,11 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
+  // ======== signup ==========
   async signup(data: AuthDto): Promise<TokenDto> {
     const hash = await argon.hash(data.password);
     const user = new this.userModel({
-      email: data.email,
+      ...data,
       hash,
     });
 
@@ -27,17 +28,27 @@ export class AuthService {
       return this.signToken(user.id, user.email);
     } catch (error) {
       if (error.name === 'MongoServerError' && error.code === 11000) {
-        throw new ForbiddenException('Такой пользователь уже существует');
+        throw new ForbiddenException(
+          'Пользователь с таким email уже существует',
+        );
       }
       throw error;
     }
   }
 
+  // ======== signin ==========
   async signin(data: AuthDto) {
     const user = await this.userModel
       .findOne({ email: data.email })
       // INFO: поле hash помечено как невыбираемое в схеме, но можно выбрать так) или так .select('+hash');
-      .select({ hash: 1 });
+      // .select({ hash: 1 });
+      .select({
+        email: 1,
+        firstName: 1,
+        lastName: 1,
+        patronymicName: 1,
+        hash: 1,
+      });
 
     /**
        INFO:
@@ -55,16 +66,21 @@ export class AuthService {
      * Фильтры исключений могут быть использованы по-разному: на методах, на контроллерах или глобально.
      */
     if (!user) {
-      throw new ForbiddenException('Неверные входные данные');
+      throw new ForbiddenException('Неверное имя пользователя');
     }
     const passMatch = await argon.verify(user.hash, data.password);
     if (!passMatch) {
       throw new ForbiddenException('Неверный пароль');
     }
 
-    return this.signToken(user.id, user.email);
+    const tokenObj = await this.signToken(user.id, user.email);
+
+    const usr = user.toObject();
+    delete usr.hash;
+    return { ...tokenObj, user: usr };
   }
 
+  // ======== signToken ==========
   async signToken(userId: string, email: string): Promise<TokenDto> {
     const payload = {
       sub: userId,
