@@ -1,8 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { EditUserDto, UserDto } from 'user/dto';
 
 export class TokenDto {
   @ApiProperty()
   token: string;
+}
+
+export class AuthResponse extends TokenDto {
+  @ApiProperty()
+  user: EditUserDto;
 }
 
 // export interface TokenDto {

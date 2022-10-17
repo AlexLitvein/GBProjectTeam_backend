@@ -17,15 +17,16 @@ export type UserDocument = User & Document;
 @Schema({ timestamps: true })
 export class User {
   @ApiProperty()
-  @Prop({ required: true, unique: true })
+  // @Prop({ required: true, unique: true })
+  @Prop({ unique: true })
   email: string;
 
   @ApiPropertyOptional()
-  @Prop({ required: false, default: '' })
+  @Prop({ default: '' })
   firstName: string;
 
   @ApiPropertyOptional()
-  @Prop({ required: false, default: '' })
+  @Prop({ default: '' })
   lastName: string;
 
   @ApiPropertyOptional()

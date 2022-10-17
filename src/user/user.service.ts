@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EditUserDto } from './dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,8 +17,20 @@ export class UserService {
      * new: true, вместо этого findOneAndUpdate() предоставит вам объект после
      * применения обновления.
      */
-    return this.userModel.findOneAndUpdate({ _id: userId }, dto, {
-      new: true,
-    });
+
+    let user = null;
+    try {
+      user = await this.userModel.findOneAndUpdate({ _id: userId }, dto, {
+        new: true,
+      });
+    } catch (error) {
+      if (error.name === 'MongoServerError' && error.code === 11000) {
+        throw new ForbiddenException(
+          'Пользователь с таким email уже существует',
+        );
+      }
+      throw error;
+    }
+    return user;
   }
 }
