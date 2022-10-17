@@ -12,9 +12,9 @@ import { Project, ProjectDocument, projectProxy } from './project.shema';
 @Injectable()
 export class ProjectService {
   constructor(
-    @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+    @InjectModel(Project.name, 'nest') private projectModel: Model<ProjectDocument>,
     private storage: StorageService,
-  ) {}
+  ) { }
 
   private async _find(filter: Object) {
     // INFO: выбрать все кроме почты
@@ -61,8 +61,7 @@ export class ProjectService {
     files.forEach((el) => {
       if (el.size > maxSize) {
         errors.push(
-          `Размер файла ${el.originalname} больше допустимого (${
-            maxSize / 1024
+          `Размер файла ${el.originalname} больше допустимого (${maxSize / 1024
           } КБ)`,
         );
       }

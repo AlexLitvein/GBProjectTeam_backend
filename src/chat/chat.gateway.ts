@@ -27,10 +27,10 @@ export class ChatGateway implements OnGatewayConnection, OnModuleInit {
   server: Server;
   constructor(
     private readonly commentService: CommentService,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(User.name, 'nest') private userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async onModuleInit() {
     console.log(`The module has been initialized.`);

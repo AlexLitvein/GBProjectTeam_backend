@@ -6,9 +6,9 @@ import { Docum, DocumSchema } from './document.shema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Docum.name, schema: DocumSchema }]),
+    MongooseModule.forFeature([{ name: Docum.name, schema: DocumSchema }], 'nest'),
   ],
   controllers: [DocumentController],
   providers: [DocumentService],
 })
-export class DocumentModule {}
+export class DocumentModule { }

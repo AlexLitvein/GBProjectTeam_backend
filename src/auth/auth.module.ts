@@ -9,7 +9,7 @@ import { User, UserSchema } from 'user/user.shema';
 @Module({
   imports: [
     JwtModule.register({}),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }], 'nest'),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
