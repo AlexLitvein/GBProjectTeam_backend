@@ -12,7 +12,7 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
   constructor() {
     // private readonly configService: ConfigService,
     this.gridFsStorage = new GridFsStorage({
-      url: 'mongodb://localhost:27017/files',
+      url: process.env.DATABASE_URL + 'files',
     });
   }
 

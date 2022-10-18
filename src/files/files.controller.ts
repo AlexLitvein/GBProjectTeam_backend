@@ -2,6 +2,7 @@ import {
   Post,
   Controller,
   UploadedFiles,
+  UploadedFile,
   Logger,
   UseInterceptors,
   UseGuards,
@@ -16,12 +17,11 @@ import {
   ApiConsumes,
   ApiBadRequestResponse,
   ApiTags,
+  ApiBody,
 } from '@nestjs/swagger';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { ApiMultiFile } from './apimultifile';
-
 import { ApiException } from './api-exception.model';
-
 import { FilesService } from './files.service';
 import { FileResponseVm } from './dto/file-response-vm.dto';
 
@@ -32,9 +32,28 @@ export class FilesController {
 
   @Post('')
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  upload(@UploadedFile() file) {
+    // Logger.debug(file, 'FILE UPLOADER');
+    return file;
+  }
+
+  @Post('many')
+  @ApiConsumes('multipart/form-data')
   @ApiMultiFile()
   @UseInterceptors(FilesInterceptor('files'))
-  upload(@UploadedFiles() files) {
+  uploadMany(@UploadedFiles() files) {
     console.debug(files, 'FILE UPLOADER');
     const response = [];
     files.forEach((file) => {
