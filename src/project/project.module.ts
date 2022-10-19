@@ -7,7 +7,10 @@ import { StorageService } from 'storage/storage.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
+    MongooseModule.forFeature(
+      [{ name: Project.name, schema: ProjectSchema }],
+      'nest',
+    ),
   ],
   controllers: [ProjectController],
   providers: [ProjectService, StorageService],
