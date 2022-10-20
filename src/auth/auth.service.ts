@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, UseFilters } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { AuthDto, AuthResponse, TokenDto } from 'auth/dto';
+import { AuthDto, Token } from 'auth/dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'user/user.shema';
@@ -16,7 +16,7 @@ export class AuthService {
   ) {}
 
   // ======== signup ==========
-  async signup(data: AuthDto): Promise<TokenDto> {
+  async signup(data: AuthDto): Promise<Token> {
     const hash = await argon.hash(data.password);
     const user = new this.userModel({
       ...data,
@@ -81,7 +81,7 @@ export class AuthService {
   }
 
   // ======== signToken ==========
-  async signToken(userId: string, email: string): Promise<TokenDto> {
+  async signToken(userId: string, email: string): Promise<Token> {
     const payload = {
       sub: userId,
       email,
