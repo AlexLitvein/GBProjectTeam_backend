@@ -18,7 +18,6 @@ export class Docum {
   @ApiProperty({ type: 'string' })
   @IsMongoId()
   @Prop({
-    required: true,
     type: mongoose.Schema.Types.ObjectId,
   })
   projectId: ObjectId;
@@ -27,6 +26,13 @@ export class Docum {
   @IsString()
   @Prop({ default: '' })
   attachedFileName: string;
+
+  @ApiProperty({ type: 'string' })
+  @IsMongoId()
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  attachedFileId: ObjectId;
 
   // @ApiProperty()
   // @IsMongoId({ each: true })

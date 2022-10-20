@@ -1,14 +1,7 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from 'auth/auth.service';
-import { AuthDto, AuthResponse, TokenDto } from 'auth/dto';
-import {
-  ApiBody,
-  ApiExtraModels,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { AuthDto, AuthResponse, Token } from 'auth/dto';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RegistrationDto } from './dto/registration.dto';
 
 @ApiTags('Регистрация/Авторизация')
@@ -27,10 +20,10 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'Successfully created',
-    type: TokenDto,
+    type: Token,
   })
   @Post('signup') // конечн точка
-  signup(@Body() dto: RegistrationDto): Promise<TokenDto> {
+  signup(@Body() dto: RegistrationDto): Promise<Token> {
     return this.authService.signup(dto);
   }
 

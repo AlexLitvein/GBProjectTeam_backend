@@ -1,24 +1,24 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Patch,
   Post,
-  UploadedFile,
-  UploadedFiles,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiResponse,
   ApiOperation,
   ApiBody,
   ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
 import { GetUser } from 'auth/decorator/get-user.decorator';
 import { JwtGuard } from 'auth/guard';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
+import { ObjectId } from 'mongoose';
 import { EditUserDto, UserDto } from 'user/dto';
 import { UserService } from 'user/user.service';
 
@@ -34,7 +34,37 @@ import { UserService } from 'user/user.service';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  // ======== editUser ==========
+  // ======== readOne ==========
+  @ApiOperation({
+    description: 'Получить пользователя по его id',
+  })
+  @ApiResponse({
+    status: 200,
+    type: UserDto,
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'id пользователя',
+  })
+  @Get(':id')
+  readOne(@Param('id') id: ObjectId) {
+    return this.userService.findOne(id);
+  }
+
+  // ======== readMany ==========
+  @ApiOperation({
+    description: 'Получить всех пользователей',
+  })
+  @ApiResponse({
+    status: 200,
+    type: [UserDto],
+  })
+  @Get()
+  readMany() {
+    return this.userService.findAll();
+  }
+
+  // ======== update ==========
   @ApiOperation({
     description: 'Обновить данные юзера',
   })
@@ -46,7 +76,7 @@ export class UserController {
     type: UserDto,
   })
   @Patch()
-  editUser(@GetUser('_id') userId: string, @Body() dto: EditUserDto) {
+  update(@GetUser('_id') userId: string, @Body() dto: EditUserDto) {
     return this.userService.editUser(userId, dto);
   }
 }

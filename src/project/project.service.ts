@@ -38,12 +38,12 @@ export class ProjectService {
     return await project.save();
   }
 
-  async findAll() {
-    return this._find({});
-  }
-
   findOne(id: ObjectId) {
     return this._find({ _id: id });
+  }
+
+  async findAll() {
+    return this._find({});
   }
 
   async update(id: ObjectId, updateProjectDto: UpdateProjectDto) {
@@ -56,42 +56,7 @@ export class ProjectService {
     );
   }
 
-  async upload(files: Array<Express.Multer.File>) {
-    const maxSize = 2 ** 16;
-    const errors: string[] = [];
-
-    files.forEach((el) => {
-      if (el.size > maxSize) {
-        errors.push(
-          `Размер файла ${el.originalname} больше допустимого (${
-            maxSize / 1024
-          } КБ)`,
-        );
-      }
-
-      if (!/(pdf|doc|jpg|png)/.test(el.mimetype)) {
-        errors.push(
-          `Недопустимый тип файла ${el.originalname}, требуется (pdf,doc,jpg,png)`,
-        );
-      }
-    });
-
-    if (errors.length) throw new BadRequestException(errors);
-
-    return this.storage.upload(files);
+  remove(id: ObjectId) {
+    return this.projectModel.findByIdAndDelete(id);
   }
-
-  // async getFilesList() {
-  //   const data = await this.storage.list();
-  //   return data.map((el) => ({ name: el.Key, size: el.Size }));
-  // }
-
-  // async getFileOne(fileNames: string[]) {
-  //   fileNames.forEach((el) => {});
-  //   return null;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} project`;
-  // }
 }

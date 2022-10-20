@@ -18,12 +18,15 @@ import {
   ApiBadRequestResponse,
   ApiTags,
   ApiBody,
+  ApiResponse,
+  ApiOperation,
 } from '@nestjs/swagger';
 import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { ApiMultiFile } from './apimultifile';
 import { ApiException } from './api-exception.model';
 import { FilesService } from './files.service';
 import { FileResponseVm } from './dto/file-response-vm.dto';
+import { UploadFileResponse, UploadFile } from './dto/fileUpload.dto';
 
 @Controller('files')
 @ApiTags('Files')
@@ -45,35 +48,27 @@ export class FilesController {
   })
   @UseInterceptors(FileInterceptor('file'))
   upload(@UploadedFile() file) {
-    // Logger.debug(file, 'FILE UPLOADER');
     return file;
   }
 
   @Post('many')
+  @ApiOperation({
+    description:
+      'Загрузить файлы на сервер. Пользоваться этим запросом (даже для одного файла).',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFile()
+  @ApiResponse({
+    status: 201,
+    type: [UploadFileResponse],
+  })
   @UseInterceptors(FilesInterceptor('files'))
-  uploadMany(@UploadedFiles() files) {
-    console.debug(files, 'FILE UPLOADER');
-    const response = [];
-    files.forEach((file) => {
-      const fileReponse = {
-        originalname: file.originalname,
-        encoding: file.encoding,
-        mimetype: file.mimetype,
-        id: file.id,
-        filename: file.filename,
-        metadata: file.metadata,
-        bucketName: file.bucketName,
-        chunkSize: file.chunkSize,
-        size: file.size,
-        md5: file.md5,
-        uploadDate: file.uploadDate,
-        contentType: file.contentType,
-      };
-      response.push(fileReponse);
-    });
-    return response;
+  uploadMany(@UploadedFiles() files: UploadFile[]) {
+    return files.map((file) => ({
+      id: file.id,
+      originalname: file.originalname,
+      uploadDate: file.uploadDate,
+    }));
   }
 
   @Get('info/:id')

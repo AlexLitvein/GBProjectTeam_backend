@@ -56,20 +56,7 @@ export class ProjectController {
     return this.projectService.create(createProjectDto);
   }
 
-  // ======== findAll ==========
-  @ApiOperation({
-    description: 'Получить все проекты документов',
-  })
-  @ApiResponse({
-    status: 200,
-    type: [ProjectDto],
-  })
-  @Get()
-  findAll() {
-    return this.projectService.findAll();
-  }
-
-  // ======== findOne ==========
+  // ======== readOne ==========
   @ApiOperation({
     description: 'Получить проект документов по его id',
   })
@@ -82,8 +69,21 @@ export class ProjectController {
     description: 'id пакета документов',
   })
   @Get(':id')
-  findOne(@Param('id') id: ObjectId) {
+  readOne(@Param('id') id: ObjectId) {
     return this.projectService.findOne(id);
+  }
+
+  // ======== readMany ==========
+  @ApiOperation({
+    description: 'Получить все проекты документов',
+  })
+  @ApiResponse({
+    status: 200,
+    type: [ProjectDto],
+  })
+  @Get()
+  readMany() {
+    return this.projectService.findAll();
   }
 
   // ======== update ==========
@@ -109,41 +109,20 @@ export class ProjectController {
     return this.projectService.update(id, updateProjectDto);
   }
 
-  // ======== uploadFiles ==========
+  // ======== delete ==========
   @ApiOperation({
-    description: 'Загрузить файлы в хранилище',
-  })
-  @ApiBody({
-    description: 'Content-Type: multipart/form-data',
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-          },
-        },
-      },
-    },
+    description: 'Удалить пакет по его id',
   })
   @ApiResponse({
-    status: 201,
-    description: 'Возвращается объект с массивом путей файлов в хранилище',
-    type: UploadFilesResultDto,
+    status: 200,
+    type: ProjectDto,
   })
-  @Post('upload')
-  @UseInterceptors(FilesInterceptor('files'))
-  uploadFiles(
-    @UploadedFiles()
-    files: Array<Express.Multer.File>,
-  ) {
-    return this.projectService.upload(files);
+  @ApiParam({
+    name: 'id',
+    description: 'id пакета документов',
+  })
+  @Delete(':id')
+  delete(@Param('id') id: ObjectId) {
+    return this.projectService.remove(id);
   }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.projectService.remove(+id);
-  // }
 }
