@@ -13,7 +13,7 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
   gridFsStorage: any;
   constructor() {
     console.log({
-      DATABASE_FILES_URL_log: process.env.DATABASE_FILES_URL + 'files',
+      process_env: process.env,
     });
 
     // private readonly configService: ConfigService,
