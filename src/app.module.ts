@@ -20,7 +20,7 @@ import { FilesModule } from './files/files.module';
       dbName: 'nest',
       connectionName: 'nest',
     }),
-    MongooseModule.forRoot(process.env.DATABASE_FILES_URL, {
+    MongooseModule.forRoot(process.env.DATABASE_URL, {
       dbName: 'files',
       connectionName: 'files',
     }),
