@@ -1,25 +1,23 @@
 import { Injectable } from '@nestjs/common';
 // import { ConfigService } from '../config/config.service.ts';
+import { InjectConnection } from '@nestjs/mongoose';
 import {
   MulterModuleOptions,
   MulterOptionsFactory,
 } from '@nestjs/platform-express';
 import { GridFsStorage } from 'multer-gridfs-storage';
+import { Connection } from 'mongoose';
 
 console.log('GridFsMulterConfigService: ');
 
 @Injectable()
 export class GridFsMulterConfigService implements MulterOptionsFactory {
   gridFsStorage: any;
-  constructor() {
-    console.log({
-      process_env: process.env,
-    });
-
-    // private readonly configService: ConfigService,
+  constructor(
+    @InjectConnection('files') private readonly connection: Connection,
+  ) {
     this.gridFsStorage = new GridFsStorage({
-      // url: process.env.DATABASE_FILES_URL + 'files',
-      url: 'mongodb://citizix:S3cret@mongodb:27017/' + 'files',
+      db: connection,
     });
   }
 
