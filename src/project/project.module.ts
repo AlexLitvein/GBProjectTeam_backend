@@ -13,6 +13,6 @@ import { StorageService } from 'storage/storage.service';
     ),
   ],
   controllers: [ProjectController],
-  providers: [ProjectService, StorageService],
+  providers: [ProjectService], // StorageService
 })
 export class ProjectModule {}

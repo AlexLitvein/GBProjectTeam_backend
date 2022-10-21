@@ -32,6 +32,6 @@ import { FilesModule } from './files/files.module';
     ChatModule,
     FilesModule,
   ],
-  providers: [StorageService],
+  // providers: [StorageService],
 })
 export class AppModule {}

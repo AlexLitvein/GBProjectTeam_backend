@@ -6,7 +6,6 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateProjectDto, UpdateProjectDto } from 'project/dto';
-import { StorageService } from 'storage/storage.service';
 import { Project, ProjectDocument, projectProxy } from './project.shema';
 
 @Injectable()
@@ -14,7 +13,6 @@ export class ProjectService {
   constructor(
     @InjectModel(Project.name, 'nest')
     private projectModel: Model<ProjectDocument>,
-    private storage: StorageService,
   ) {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types
