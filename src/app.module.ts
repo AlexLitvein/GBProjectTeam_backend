@@ -11,6 +11,8 @@ import { DocumentModule } from 'document/document.module';
 import { ChatModule } from './chat/chat.module';
 import { FilesModule } from './files/files.module';
 
+console.log('AppModule: ');
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
