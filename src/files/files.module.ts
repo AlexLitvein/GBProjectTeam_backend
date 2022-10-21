@@ -3,7 +3,7 @@ import { FilesController } from './files.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { GridFsMulterConfigService } from './multer-config.service';
 import { FilesService } from './files.service';
-import { MongooseModule } from '@nestjs/mongoose';
+// import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
