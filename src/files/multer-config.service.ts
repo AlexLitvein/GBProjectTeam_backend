@@ -17,7 +17,7 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
     console.log('constructor GridFsMulterConfigService: ');
 
     this.gridFsStorage = new GridFsStorage({
-      db: connection.db,
+      db: connection,
     });
   }
 
