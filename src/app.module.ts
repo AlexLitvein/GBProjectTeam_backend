@@ -22,8 +22,7 @@ console.log('AppModule: ');
       dbName: 'nest',
       connectionName: 'nest',
     }),
-    // MongooseModule.forRoot(process.env.DATABASE_FILES_URL, {
-    MongooseModule.forRoot('mongodb://citizix:S3cret@mongodb:27017/', {
+    MongooseModule.forRoot(process.env.DATABASE_FILE_URL, {
       dbName: 'files',
       connectionName: 'files',
     }),
