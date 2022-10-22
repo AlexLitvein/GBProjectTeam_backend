@@ -17,9 +17,26 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
     console.log('constructor GridFsMulterConfigService: ');
 
     this.gridFsStorage = new GridFsStorage({
-      db: connection,
+      db: connection.db,
     });
   }
+
+  // constructor() {
+  //   console.log('constructor GridFsMulterConfigService: ');
+
+  //   this.gridFsStorage = new GridFsStorage({
+  //     url: 'mongodb://localhost/yourDB',
+  //     file: (req, file) => {
+  //       return new Promise((resolve, reject) => {
+  //         const filename = file.originalname.trim();
+  //         const fileInfo = {
+  //           filename: filename,
+  //         };
+  //         resolve(fileInfo);
+  //       });
+  //     },
+  //   });
+  // }
 
   createMulterOptions(): MulterModuleOptions {
     return {
