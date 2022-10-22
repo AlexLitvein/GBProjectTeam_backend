@@ -13,9 +13,9 @@ console.log('GridFsMulterConfigService: ');
 @Injectable()
 export class GridFsMulterConfigService implements MulterOptionsFactory {
   gridFsStorage: any;
-  constructor(
-    @InjectConnection('files') private readonly connection: Connection,
-  ) {
+  constructor(@InjectConnection('files') connection: Connection) {
+    console.log('constructor GridFsMulterConfigService: ');
+
     this.gridFsStorage = new GridFsStorage({
       db: connection,
     });

@@ -22,7 +22,7 @@ console.log('AppModule: ');
       dbName: 'nest',
       connectionName: 'nest',
     }),
-    MongooseModule.forRoot(process.env.DATABASE_FILE_URL, {
+    MongooseModule.forRoot(process.env.DATABASE_URL, {
       dbName: 'files',
       connectionName: 'files',
     }),
