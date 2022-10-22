@@ -13,32 +13,32 @@ console.log('GridFsMulterConfigService: ');
 @Injectable()
 export class GridFsMulterConfigService implements MulterOptionsFactory {
   gridFsStorage: any;
-  constructor(
-    @InjectConnection('files') private readonly connection: Connection,
-  ) {
+//   constructor(
+//     @InjectConnection('files') private readonly connection: Connection,
+//   ) {
+//     console.log('constructor GridFsMulterConfigService: ');
+
+//     this.gridFsStorage = new GridFsStorage({
+//       db: this.connection,
+//     });
+//   }
+
+  constructor() {
     console.log('constructor GridFsMulterConfigService: ');
 
     this.gridFsStorage = new GridFsStorage({
-      db: this.connection,
+      url: 'mongodb://localhost/yourDB',
+      file: (req, file) => {
+        return new Promise((resolve, reject) => {
+          const filename = file.originalname.trim();
+          const fileInfo = {
+            filename: filename,
+          };
+          resolve(fileInfo);
+        });
+      },
     });
   }
-
-  // constructor() {
-  //   console.log('constructor GridFsMulterConfigService: ');
-
-  //   this.gridFsStorage = new GridFsStorage({
-  //     url: 'mongodb://localhost/yourDB',
-  //     file: (req, file) => {
-  //       return new Promise((resolve, reject) => {
-  //         const filename = file.originalname.trim();
-  //         const fileInfo = {
-  //           filename: filename,
-  //         };
-  //         resolve(fileInfo);
-  //       });
-  //     },
-  //   });
-  // }
 
   createMulterOptions(): MulterModuleOptions {
     return {
