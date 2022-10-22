@@ -8,6 +8,7 @@ ENV PATH ./node_modules/.bin:$PATH
 # не использовать кеш, когда мы меняем зависимости nodejs нашего приложения:
 ADD package.json /tmp/package.json
 RUN cd /tmp && npm install
+RUN npm install argon2 --build-from-source
 # RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
 RUN cd /~/serv && cp -a /tmp/node_modules .
 
