@@ -1,30 +1,62 @@
-FROM node
-
-# Create app directory
-WORKDIR ~/serv
+FROM node:14 AS builder
+ENV APP_NAME=GBProjectTeam_backend-app
+WORKDIR /opt/$APP_NAME
 ENV PATH ./node_modules/.bin:$PATH
-
-# используйте изменения в package.json, чтобы заставить Docker 
-# не использовать кеш, когда мы меняем зависимости nodejs нашего приложения:
-# ADD package.json /tmp/package.json
-# ADD package.json ./
-# COPY package.json  package-lock.json ./tmp/
-COPY package.json package-lock.json ./
-
-# RUN cd /tmp && npm install
-# RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
-# RUN cd /~/serv && cp -a /tmp/node_modules .
-RUN npm install
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-# COPY package*.json ./
-
-# If you are building your code for production
-# RUN npm ci --only=production
-# RUN npm install
-
-# Bundle app source
+COPY package.json ./
+RUN npm i
 COPY . .
 RUN npm run build
+RUN npm prune --production
+
+
+FROM node:14-alpine AS production
+ENV APP_NAME=GBProjectTeam_backend-app
+ENV NODE_ENV=production
+WORKDIR /opt/$APP_NAME
+COPY --from=builder /opt/$APP_NAME/node_modules /opt/$APP_NAME/node_modules
+COPY --from=builder /opt/$APP_NAME/dist/  /opt/$APP_NAME/
+EXPOSE 3333
 CMD ["npm", "start"]
+
+
+
+
+
+
+# ##
+# #Don't use images from docker.hub because of toomanyrequests error is possible
+# FROM node:14 as build-stage
+# #
+
+# MAINTAINER GeekBrains <support@geekbrains.ru>
+# USER root
+
+# ENV APPLICATION_NAME=gb-demo-app
+# ENV SASS_BINARY_PATH=/opt/$APPLICATION_NAME/bin/vendor/linux-x64/binding.node
+# WORKDIR /opt/$APPLICATION_NAME
+
+# # Optimization. If package.json etc. have no changes Docker skips `npm ci`
+# COPY package.json  package-lock.json ./
+# RUN npm ci
+
+# COPY ./ ./
+# RUN npm run test:api
+# RUN npm run build:api
+# RUN npm prune --production
+
+# ####
+# FROM node:14-alpine as production-stage
+
+# ENV APPLICATION_NAME=gb-demo-app
+# ENV NODE_ENV=production
+# WORKDIR /opt/$APPLICATION_NAME
+
+# COPY --from=build-stage /opt/$APPLICATION_NAME/node_modules /opt/$APPLICATION_NAME/node_modules
+# COPY --from=build-stage /opt/$APPLICATION_NAME/dist/ /opt/$APPLICATION_NAME/start.sh /opt/$APPLICATION_NAME/.env /opt/$APPLICATION_NAME/
+# RUN chmod 0755 /opt/$APPLICATION_NAME/start.sh
+
+# EXPOSE 3000
+
+# # Run with --restart=on-failure
+# CMD ["./start.sh"]
+# # CMD ["ls"]
