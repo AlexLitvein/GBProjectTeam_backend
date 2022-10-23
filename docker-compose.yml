@@ -12,15 +12,31 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=citizix
       - MONGO_INITDB_ROOT_PASSWORD=S3cret
     restart: always
-  app:
-    build: https://github.com/AlexLitvein/GBProjectTeam_backend.git#main
-    container_name: serv
+  # app:
+  #   build: https://github.com/AlexLitvein/GBProjectTeam_backend.git#main
+  #   container_name: serv
+  #   environment:
+  #     DATABASE_URL: mongodb://citizix:S3cret@mongodb:27017/
+  #     DATABASE_FILE_URL: mongodb://citizix:S3cret@mongodb:27017/
+  #     JWT_SECRET: my-secret
+  #   ports:
+  #     - 80:3333
+  #   restart: always
+  #   links:
+  #     - mongodb
+  myapp:
+    container_name: gb-demo-app-instance
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: gb-demo-app:latest
     environment:
+      # - MONGODB_CONNSTRING=mongodb://MongoLogin:MongoPassword@mongodb
+      # - PORT=3000
       DATABASE_URL: mongodb://citizix:S3cret@mongodb:27017/
       DATABASE_FILE_URL: mongodb://citizix:S3cret@mongodb:27017/
       JWT_SECRET: my-secret
     ports:
       - 80:3333
-    restart: always
-    links:
+    depends_on:
       - mongodb

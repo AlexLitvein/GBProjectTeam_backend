@@ -6,9 +6,7 @@ import {
   MulterOptionsFactory,
 } from '@nestjs/platform-express';
 import { GridFsStorage } from 'multer-gridfs-storage';
-import { Connection } from 'mongoose';
-
-console.log('GridFsMulterConfigService: ');
+import { Connection, Mongoose } from 'mongoose';
 
 @Injectable()
 export class GridFsMulterConfigService implements MulterOptionsFactory {
@@ -17,7 +15,7 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
     @InjectConnection('files') private readonly connection: Connection,
   ) {
     this.gridFsStorage = new GridFsStorage({
-      db: connection,
+      db: this.connection,
     });
   }
 
