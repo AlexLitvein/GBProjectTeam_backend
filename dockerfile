@@ -7,14 +7,10 @@ ENV PATH ./node_modules/.bin:$PATH
 # используйте изменения в package.json, чтобы заставить Docker 
 # не использовать кеш, когда мы меняем зависимости nodejs нашего приложения:
 # ADD package.json /tmp/package.json
-# ADD package.json ./
-# COPY package.json  package-lock.json ./tmp/
-COPY package.json package-lock.json ./
+COPY package*.json /tmp/
+RUN cd /tmp && npm install
+RUN cd /~/serv && cp -a /tmp/node_modules .
 
-# RUN cd /tmp && npm install
-# RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
-# RUN cd /~/serv && cp -a /tmp/node_modules .
-RUN npm install
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
@@ -26,5 +22,5 @@ RUN npm install
 
 # Bundle app source
 COPY . .
-RUN npm run build
-CMD ["npm", "start"]
+CMD npm build
+CMD npm start
