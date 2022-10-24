@@ -9,8 +9,6 @@ ENV PATH ./node_modules/.bin:$PATH
 # ADD package.json /tmp/package.json
 COPY package*.json /tmp/
 RUN cd /tmp && npm install
-# RUN npm install argon2 --build-from-source
-# RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app/
 RUN cd /~/serv && cp -a /tmp/node_modules .
 
 # Install app dependencies

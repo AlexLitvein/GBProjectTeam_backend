@@ -6,43 +6,16 @@ import {
   MulterOptionsFactory,
 } from '@nestjs/platform-express';
 import { GridFsStorage } from 'multer-gridfs-storage';
-import { Connection } from 'mongoose';
-
-console.log('GridFsMulterConfigService: ');
+import { Connection, Mongoose } from 'mongoose';
 
 @Injectable()
 export class GridFsMulterConfigService implements MulterOptionsFactory {
   gridFsStorage: any;
-  //   constructor(
-  //     @InjectConnection('files') private readonly connection: Connection,
-  //   ) {
-  //     console.log('constructor GridFsMulterConfigService: ');
-
-  //     this.gridFsStorage = new GridFsStorage({
-  //       db: this.connection,
-  //     });
-  //   }
-
-  constructor() {
-    console.log('constructor GridFsMulterConfigService: ');
-    console.log({
-      DATABASE_URL_log: process.env.DATABASE_URL + 'files',
-    });
-
+  constructor(
+    @InjectConnection('files') private readonly connection: Connection,
+  ) {
     this.gridFsStorage = new GridFsStorage({
-      url: process.env.DATABASE_URL + 'files',
-      options: { useNewUrlParser: true, useUnifiedTopology: true },
-      // file: (req, file) => {
-      //   console.log('file from new GridFsStorage: ');
-
-      //   return new Promise((resolve, reject) => {
-      //     const filename = file.originalname.trim();
-      //     const fileInfo = {
-      //       filename: filename,
-      //     };
-      //     resolve(fileInfo);
-      //   });
-      // },
+      db: this.connection,
     });
   }
 
