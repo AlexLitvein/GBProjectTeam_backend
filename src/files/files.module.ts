@@ -10,8 +10,12 @@ import { FilesService } from './files.service';
     MulterModule.registerAsync({
       useClass: GridFsMulterConfigService,
     }),
+    // MulterModule.register({
+    //   useClass: GridFsMulterConfigService,
+    // }),
   ],
   controllers: [FilesController],
-  providers: [GridFsMulterConfigService, FilesService],
+  // providers: [GridFsMulterConfigService, FilesService],
+  // providers: [FilesService],
 })
 export class FilesModule {}
