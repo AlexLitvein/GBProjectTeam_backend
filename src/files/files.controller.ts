@@ -31,7 +31,7 @@ import { UploadFileResponse, UploadFile } from './dto/fileUpload.dto';
 @Controller('files')
 @ApiTags('Files')
 export class FilesController {
-  constructor(private filesService: FilesService) {}
+  // constructor(private filesService: FilesService) {}
 
   @Post('')
   @ApiConsumes('multipart/form-data')
@@ -51,7 +51,6 @@ export class FilesController {
     return file;
   }
 
-  @Post('many')
   @ApiOperation({
     description:
       'Загрузить файлы на сервер. Пользоваться этим запросом (даже для одного файла).',
@@ -63,79 +62,87 @@ export class FilesController {
     type: [UploadFileResponse],
   })
   @UseInterceptors(FilesInterceptor('files'))
+  @Post('many')
   uploadMany(@UploadedFiles() files: UploadFile[]) {
-    return files.map((file) => ({
-      id: file.id,
-      originalname: file.originalname,
-      uploadDate: file.uploadDate,
-    }));
+    // files: Array<Express.Multer.File>,
+    console.log('uploadMany: ');
+    console.log({
+      files_log: files,
+    });
+
+    // return files.map((file) => ({
+    //   id: file.id,
+    //   originalname: file.originalname,
+    //   uploadDate: file.uploadDate,
+    // }));
+    return null;
   }
 
-  @Get('info/:id')
-  @ApiBadRequestResponse({ type: ApiException })
-  async getFileInfo(@Param('id') id: string): Promise<FileResponseVm> {
-    const file = await this.filesService.findInfo(id);
-    const filestream = await this.filesService.readStream(id);
-    if (!filestream) {
-      throw new HttpException(
-        'An error occurred while retrieving file info',
-        HttpStatus.EXPECTATION_FAILED,
-      );
-    }
-    return {
-      message: 'File has been detected',
-      file: file,
-    };
-  }
+  // @Get('info/:id')
+  // @ApiBadRequestResponse({ type: ApiException })
+  // async getFileInfo(@Param('id') id: string): Promise<FileResponseVm> {
+  //   const file = await this.filesService.findInfo(id);
+  //   const filestream = await this.filesService.readStream(id);
+  //   if (!filestream) {
+  //     throw new HttpException(
+  //       'An error occurred while retrieving file info',
+  //       HttpStatus.EXPECTATION_FAILED,
+  //     );
+  //   }
+  //   return {
+  //     message: 'File has been detected',
+  //     file: file,
+  //   };
+  // }
 
-  @Get(':id')
-  @ApiBadRequestResponse({ type: ApiException })
-  async getFile(@Param('id') id: string, @Res() res) {
-    const file = await this.filesService.findInfo(id);
-    const filestream = await this.filesService.readStream(id);
-    if (!filestream) {
-      throw new HttpException(
-        'An error occurred while retrieving file',
-        HttpStatus.EXPECTATION_FAILED,
-      );
-    }
-    res.header('Content-Type', file.contentType);
-    return filestream.pipe(res);
-  }
+  // @Get(':id')
+  // @ApiBadRequestResponse({ type: ApiException })
+  // async getFile(@Param('id') id: string, @Res() res) {
+  //   const file = await this.filesService.findInfo(id);
+  //   const filestream = await this.filesService.readStream(id);
+  //   if (!filestream) {
+  //     throw new HttpException(
+  //       'An error occurred while retrieving file',
+  //       HttpStatus.EXPECTATION_FAILED,
+  //     );
+  //   }
+  //   res.header('Content-Type', file.contentType);
+  //   return filestream.pipe(res);
+  // }
 
-  @Get('download/:id')
-  @ApiBadRequestResponse({ type: ApiException })
-  async downloadFile(@Param('id') id: string, @Res() res) {
-    const file = await this.filesService.findInfo(id);
-    const filestream = await this.filesService.readStream(id);
-    if (!filestream) {
-      throw new HttpException(
-        'An error occurred while retrieving file',
-        HttpStatus.EXPECTATION_FAILED,
-      );
-    }
-    res.header('Content-Type', file.contentType);
-    res.header('Content-Disposition', 'attachment; filename=' + file.filename);
-    return filestream.pipe(res);
-  }
+  // @Get('download/:id')
+  // @ApiBadRequestResponse({ type: ApiException })
+  // async downloadFile(@Param('id') id: string, @Res() res) {
+  //   const file = await this.filesService.findInfo(id);
+  //   const filestream = await this.filesService.readStream(id);
+  //   if (!filestream) {
+  //     throw new HttpException(
+  //       'An error occurred while retrieving file',
+  //       HttpStatus.EXPECTATION_FAILED,
+  //     );
+  //   }
+  //   res.header('Content-Type', file.contentType);
+  //   res.header('Content-Disposition', 'attachment; filename=' + file.filename);
+  //   return filestream.pipe(res);
+  // }
 
-  @Get('delete/:id')
-  @ApiBadRequestResponse({ type: ApiException })
-  @ApiCreatedResponse({ type: FileResponseVm })
-  async deleteFile(@Param('id') id: string): Promise<FileResponseVm> {
-    const file = await this.filesService.findInfo(id);
-    console.log('file определён');
-    const filestream = await this.filesService.deleteFile(id);
-    console.log('filestream определён', filestream);
-    if (!filestream) {
-      throw new HttpException(
-        'An error occurred during file deletion',
-        HttpStatus.EXPECTATION_FAILED,
-      );
-    }
-    return {
-      message: 'File has been deleted',
-      file: file,
-    };
-  }
+  // @Get('delete/:id')
+  // @ApiBadRequestResponse({ type: ApiException })
+  // @ApiCreatedResponse({ type: FileResponseVm })
+  // async deleteFile(@Param('id') id: string): Promise<FileResponseVm> {
+  //   const file = await this.filesService.findInfo(id);
+  //   console.log('file определён');
+  //   const filestream = await this.filesService.deleteFile(id);
+  //   console.log('filestream определён', filestream);
+  //   if (!filestream) {
+  //     throw new HttpException(
+  //       'An error occurred during file deletion',
+  //       HttpStatus.EXPECTATION_FAILED,
+  //     );
+  //   }
+  //   return {
+  //     message: 'File has been deleted',
+  //     file: file,
+  //   };
+  // }
 }
