@@ -6,14 +6,11 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectModule } from 'project/project.module';
-// import { StorageService } from 'storage/storage.service';
 import { DocumentModule } from 'document/document.module';
 import { ChatModule } from './chat/chat.module';
 import { FilesModule } from './files/files.module';
 import { MulterModule } from '@nestjs/platform-express/multer';
 import { GridFsMulterConfigService } from 'files/multer-config.service';
-
-console.log('AppModule: ');
 
 @Module({
   imports: [
@@ -24,10 +21,10 @@ console.log('AppModule: ');
       dbName: 'nest',
       connectionName: 'nest',
     }),
-    // MongooseModule.forRoot(process.env.DATABASE_URL, {
-    //   dbName: 'files',
-    //   connectionName: 'files',
-    // }),
+    MongooseModule.forRoot(process.env.DATABASE_URL, {
+      dbName: 'files',
+      connectionName: 'files',
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
@@ -35,11 +32,6 @@ console.log('AppModule: ');
     DocumentModule,
     ChatModule,
     FilesModule,
-
-    // MulterModule.registerAsync({
-    //   useClass: GridFsMulterConfigService,
-    // }),
   ],
-  // providers: [GridFsMulterConfigService],
 })
 export class AppModule {}
