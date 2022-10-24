@@ -5,7 +5,7 @@ services:
     image: mongo:5.0
     container_name: mongodb
     ports:
-      - 27020:27017
+      - 27017:27017
     volumes:
       - ~/mongodb-data/mongo:/data/db
     environment:
@@ -29,17 +29,14 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    # image: gb-demo-app:latest
+    image: gb-demo-app:latest
     environment:
       # - MONGODB_CONNSTRING=mongodb://MongoLogin:MongoPassword@mongodb
+      # - PORT=3000
       DATABASE_URL: mongodb://citizix:S3cret@mongodb:27017/
+      DATABASE_FILE_URL: mongodb://citizix:S3cret@mongodb:27017/
       JWT_SECRET: my-secret
     ports:
       - 80:3333
-    links:
-      - mongodb
     depends_on:
       - mongodb
-
-# volumes:
-#   mongodb_data_container:

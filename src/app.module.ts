@@ -6,12 +6,11 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectModule } from 'project/project.module';
-// import { StorageService } from 'storage/storage.service';
 import { DocumentModule } from 'document/document.module';
 import { ChatModule } from './chat/chat.module';
 import { FilesModule } from './files/files.module';
-
-console.log('AppModule: ');
+import { MulterModule } from '@nestjs/platform-express/multer';
+import { GridFsMulterConfigService } from 'files/multer-config.service';
 
 @Module({
   imports: [
@@ -34,6 +33,5 @@ console.log('AppModule: ');
     ChatModule,
     FilesModule,
   ],
-  // providers: [StorageService],
 })
 export class AppModule {}
