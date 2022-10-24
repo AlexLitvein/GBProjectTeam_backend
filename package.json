@@ -22,7 +22,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "pretest:e2e": "npm run-script db:test:restart",
-    "test:e2e": "npx dotenv -e .env.test -- jest --watch --no-cache --config ./test/jest-e2e.json"
+    "test:e2e": "npx dotenv -e .env.test -- jest --watch --no-cache --config ./test/jest-e2e.json",
+    "dock": "docker compose up --build  -d "
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.185.0",
