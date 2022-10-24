@@ -11,6 +11,7 @@ import {
   Res,
   HttpException,
   HttpStatus,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -31,7 +32,7 @@ import { UploadFileResponse, UploadFile } from './dto/fileUpload.dto';
 @Controller('files')
 @ApiTags('Files')
 export class FilesController {
-  constructor(private filesService: FilesService) {}
+  constructor(private filesService: FilesService) { }
 
   @Post('')
   @ApiConsumes('multipart/form-data')
@@ -119,14 +120,14 @@ export class FilesController {
     return filestream.pipe(res);
   }
 
-  @Get('delete/:id')
+  @Delete('delete/:id')
   @ApiBadRequestResponse({ type: ApiException })
   @ApiCreatedResponse({ type: FileResponseVm })
   async deleteFile(@Param('id') id: string): Promise<FileResponseVm> {
     const file = await this.filesService.findInfo(id);
-    console.log('file определён');
+    // console.log('file определён');
     const filestream = await this.filesService.deleteFile(id);
-    console.log('filestream определён', filestream);
+    // console.log('filestream определён', filestream);
     if (!filestream) {
       throw new HttpException(
         'An error occurred during file deletion',
