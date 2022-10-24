@@ -1,26 +1,19 @@
-FROM node
-
-# Create app directory
-WORKDIR ~/serv
+FROM node:14 AS builder
+ENV APP_NAME=GBProjectTeam_backend
+WORKDIR /opt/$APP_NAME
 ENV PATH ./node_modules/.bin:$PATH
-
-# используйте изменения в package.json, чтобы заставить Docker 
-# не использовать кеш, когда мы меняем зависимости nodejs нашего приложения:
-# ADD package.json /tmp/package.json
-COPY package*.json /tmp/
-RUN cd /tmp && npm install
-RUN cd /~/serv && cp -a /tmp/node_modules .
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-# COPY package*.json ./
-
-# If you are building your code for production
-# RUN npm ci --only=production
-# RUN npm install
-
-# Bundle app source
+COPY package*.json ./
+RUN npm i
 COPY . .
-CMD npm build
-CMD npm start
+RUN npm run build
+RUN npm prune --production
+
+FROM node:14-alpine AS production
+ENV APP_NAME=GBProjectTeam_backend
+ENV NODE_ENV=production
+WORKDIR /opt/$APP_NAME
+COPY package.json ./
+COPY --from=builder /opt/$APP_NAME/node_modules /opt/$APP_NAME/node_modules
+COPY --from=builder /opt/$APP_NAME/dist/  /opt/$APP_NAME/
+
+CMD ["node", "./main.js"]
