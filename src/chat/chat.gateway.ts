@@ -30,10 +30,10 @@ export class ChatGateway implements OnGatewayConnection, OnModuleInit {
     @InjectModel(User.name, 'nest') private userModel: Model<UserDocument>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async onModuleInit() {
-    console.log(`The module has been initialized.`);
+    // console.log(`The module has been initialized.`);
 
     this.server.on('connection', function (socket) {
       console.log({
