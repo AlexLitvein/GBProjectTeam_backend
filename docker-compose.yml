@@ -13,7 +13,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=S3cret
     restart: always
   app:
-    build: .
+    build: https://github.com/AlexLitvein/GBProjectTeam_backend.git#main
     container_name: serv
     environment:
       DATABASE_URL: mongodb://citizix:S3cret@mongodb:27017/

@@ -20,10 +20,6 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
   }
 
   createMulterOptions(): MulterModuleOptions {
-    console.log({
-      gridFsStorage_log: this.gridFsStorage,
-    });
-
     return {
       storage: this.gridFsStorage,
     };
