@@ -26,6 +26,15 @@ export class Project {
   @Prop({ default: '' })
   description: string;
 
+  @ApiProperty({ type: String })
+  @IsMongoId()
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
+  ownerId: ObjectId;
+
   @ApiProperty()
   @IsMongoId({ each: true })
   @IsArray()

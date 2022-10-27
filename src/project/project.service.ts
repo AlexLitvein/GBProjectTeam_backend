@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { CreateProjectDto, UpdateProjectDto } from 'project/dto';
+import { CreateProjectDto, ProjectDto, UpdateProjectDto } from 'project/dto';
 import { Project, ProjectDocument, projectProxy } from './project.shema';
 
 @Injectable()
@@ -28,11 +28,16 @@ export class ProjectService {
       .populate({
         path: projectProxy.documentsIds.toString(),
         select: ['attachedFileName'],
+      })
+      .populate({
+        path: projectProxy.ownerId.toString(),
+        select: ['firstName', 'lastName'],
       });
   }
 
-  async create(createProjectDto: CreateProjectDto) {
+  async create(createProjectDto: CreateProjectDto, ownerId: ObjectId) {
     const project = new this.projectModel(createProjectDto);
+    project.ownerId = ownerId;
     return await project.save();
   }
 
