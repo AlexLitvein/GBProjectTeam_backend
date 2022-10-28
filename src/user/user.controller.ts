@@ -15,7 +15,7 @@ import {
   ApiBearerAuth,
   ApiParam,
 } from '@nestjs/swagger';
-import { GetUser } from 'auth/decorator/get-user.decorator';
+import { GetUser } from 'auth/decorator';
 import { JwtGuard } from 'auth/guard';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';

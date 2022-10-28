@@ -24,6 +24,7 @@ import { CreateDocumentDto, DocumDto, UpdateDocumentDto } from './dto';
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
 
+  // ======== create ==========
   @ApiBody({
     description: 'Создание документа',
     type: CreateDocumentDto,
@@ -33,11 +34,12 @@ export class DocumentController {
     description: 'Successfully created',
     type: DocumDto,
   })
-  @Post()
+  @Post('create')
   create(@Body() createDocumentDto: CreateDocumentDto) {
     return this.documentService.create(createDocumentDto);
   }
 
+  // ======== getMany ==========
   @ApiParam({
     name: 'projectId',
     description: 'id проекта документов',
@@ -54,6 +56,7 @@ export class DocumentController {
     return this.documentService.findMany(projectId);
   }
 
+  // ======== update ==========
   @ApiParam({
     name: 'id',
     description: 'id документа',
@@ -67,7 +70,7 @@ export class DocumentController {
     description: 'Successfully updated',
     type: DocumDto,
   })
-  @Patch(':id')
+  @Patch('update/:id')
   update(
     @Param('id', new ParseObjectIdPipe()) id: ObjectId,
     @Body() updateDocumentDto: UpdateDocumentDto,
@@ -85,7 +88,7 @@ export class DocumentController {
   //   return this.documentService.findOne(+id);
   // }
 
-  // @Delete(':id')
+  // @Delete('delete/:id')
   // remove(@Param('id') id: string) {
   //   return this.documentService.remove(+id);
   // }

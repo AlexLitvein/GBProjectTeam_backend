@@ -6,12 +6,12 @@ import {
   Patch,
   Param,
   Delete,
-  UploadedFiles,
-  UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto, UpdateProjectDto, ProjectDto } from 'project/dto';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiExtraModels,
   ApiOperation,
@@ -21,25 +21,21 @@ import {
 } from '@nestjs/swagger';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { UploadFilesResultDto } from 'storage/dto/upload.dto';
+import { JwtGuard } from 'auth/guard';
+import { GetUser } from 'auth/decorator';
 
 @ApiExtraModels(ProjectDto, ApiErrorDto)
 @ApiTags('projects')
+@ApiBearerAuth('defaultBearerAuth')
 @ApiResponse({
   status: 400,
   description: 'Error description string',
   type: ApiErrorDto,
 })
+@UseGuards(JwtGuard)
 @Controller('projects')
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
-
-  // INFO: Дб выше @Get(':id')
-  // @Get('fileslist')
-  // getFilesList() {
-  //   return this.projectService.getFilesList();
-  // }
 
   // ======== create ==========
   @ApiBody({
@@ -51,12 +47,15 @@ export class ProjectController {
     description: 'Successfully created',
     type: ProjectDto,
   })
-  @Post()
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectService.create(createProjectDto);
+  @Post('create')
+  create(
+    @GetUser('_id') userId: ObjectId,
+    @Body() createProjectDto: CreateProjectDto,
+  ) {
+    return this.projectService.create(createProjectDto, userId);
   }
 
-  // ======== readOne ==========
+  // ======== getOne ==========
   @ApiOperation({
     description: 'Получить проект документов по его id',
   })
@@ -69,11 +68,11 @@ export class ProjectController {
     description: 'id пакета документов',
   })
   @Get(':id')
-  readOne(@Param('id') id: ObjectId) {
+  getOne(@Param('id') id: ObjectId) {
     return this.projectService.findOne(id);
   }
 
-  // ======== readMany ==========
+  // ======== getMany ==========
   @ApiOperation({
     description: 'Получить все проекты документов',
   })
@@ -82,7 +81,7 @@ export class ProjectController {
     type: [ProjectDto],
   })
   @Get()
-  readMany() {
+  getMany() {
     return this.projectService.findAll();
   }
 
@@ -101,7 +100,7 @@ export class ProjectController {
     name: 'id',
     description: 'id пакета документов',
   })
-  @Patch(':id')
+  @Patch('update/:id')
   update(
     @Param('id') id: ObjectId,
     @Body() updateProjectDto: UpdateProjectDto,
@@ -121,7 +120,7 @@ export class ProjectController {
     name: 'id',
     description: 'id пакета документов',
   })
-  @Delete(':id')
+  @Delete('delete/:id')
   delete(@Param('id') id: ObjectId) {
     return this.projectService.remove(id);
   }

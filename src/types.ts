@@ -4,6 +4,7 @@ export enum ProjectStatus {
   NOT_APPROVED = 'Отклонено',
   ARCHIVED = 'В архиве',
   CLOSED = 'Завершено',
+  DRAFT = 'Черновик',
 }
 
 export enum DocumentStatus {
