@@ -33,7 +33,10 @@ import { UploadFileResponse, UploadFile } from './dto/fileUpload.dto';
 export class FilesController {
   constructor(private filesService: FilesService) {}
 
-  @Post('')
+  @Post('uploadOne')
+  @ApiOperation({
+    description: 'Загрузить файл на сервер',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -46,15 +49,22 @@ export class FilesController {
       },
     },
   })
+  @ApiResponse({
+    status: 201,
+    type: UploadFileResponse,
+  })
   @UseInterceptors(FileInterceptor('file'))
   upload(@UploadedFile() file) {
-    return file;
+    return {
+      id: file.id,
+      originalname: file.originalname,
+      uploadDate: file.uploadDate,
+    };
   }
 
-  @Post('many')
+  @Post('uploadMany')
   @ApiOperation({
-    description:
-      'Загрузить файлы на сервер. Пользоваться этим запросом (даже для одного файла).',
+    description: 'Загрузить файлы на сервер',
   })
   @ApiConsumes('multipart/form-data')
   @ApiMultiFile()

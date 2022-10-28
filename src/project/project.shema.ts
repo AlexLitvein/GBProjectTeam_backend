@@ -35,22 +35,24 @@ export class Project {
   })
   ownerId: ObjectId;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsMongoId({ each: true })
   @IsArray()
   @ArrayUnique()
   @Prop({
-    required: true,
+    required: false,
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Docum' }],
   })
   documentsIds: ObjectId[];
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsMongoId({ each: true })
   @IsArray()
   @ArrayUnique()
   @Prop({
-    required: true,
+    required: false,
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   })
   coordinationUsersIds: ObjectId[];

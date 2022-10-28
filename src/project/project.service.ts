@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateProjectDto, ProjectDto, UpdateProjectDto } from 'project/dto';
+import { ProjectStatus } from 'types';
 import { Project, ProjectDocument, projectProxy } from './project.shema';
 
 @Injectable()
@@ -38,6 +39,7 @@ export class ProjectService {
   async create(createProjectDto: CreateProjectDto, ownerId: ObjectId) {
     const project = new this.projectModel(createProjectDto);
     project.ownerId = ownerId;
+    project.status = ProjectStatus.DRAFT;
     return await project.save();
   }
 
