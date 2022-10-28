@@ -16,7 +16,6 @@ services:
     build:
       # context: .
       context: https://github.com/AlexLitvein/GBProjectTeam_backend.git#main
-      dockerfile: ./dev.dockerfile
     container_name: serv
     environment:
       DATABASE_URL: mongodb://citizix:S3cret@mongodb:27017/
