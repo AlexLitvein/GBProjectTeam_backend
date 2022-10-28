@@ -16,7 +16,7 @@ services:
     build:
       # context: .
       context: https://github.com/AlexLitvein/GBProjectTeam_backend.git#main
-      dockerfile: https://github.com/AlexLitvein/GBProjectTeam_backend.git#main/dev.dockerfile
+      dockerfile: ./dev.dockerfile
 
     container_name: serv
     environment:
