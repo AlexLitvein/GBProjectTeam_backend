@@ -26,22 +26,33 @@ export class Project {
   @Prop({ default: '' })
   description: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: String })
+  @IsMongoId()
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
+  ownerId: ObjectId;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsMongoId({ each: true })
   @IsArray()
   @ArrayUnique()
   @Prop({
-    required: true,
+    required: false,
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Docum' }],
   })
   documentsIds: ObjectId[];
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsMongoId({ each: true })
   @IsArray()
   @ArrayUnique()
   @Prop({
-    required: true,
+    required: false,
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   })
   coordinationUsersIds: ObjectId[];

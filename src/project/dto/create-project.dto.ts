@@ -4,4 +4,5 @@ import { ProjectDto } from './project.dto';
 export class CreateProjectDto extends OmitType(ProjectDto, [
   'createdAt',
   'updatedAt',
+  'ownerId',
 ] as const) {}
