@@ -9,8 +9,7 @@ import { ProjectModule } from 'project/project.module';
 import { DocumentModule } from 'document/document.module';
 import { ChatModule } from './chat/chat.module';
 import { FilesModule } from './files/files.module';
-import { MulterModule } from '@nestjs/platform-express/multer';
-import { GridFsMulterConfigService } from 'files/multer-config.service';
+import { ReferenceController } from './reference/reference.controller';
 
 @Module({
   imports: [
@@ -33,5 +32,6 @@ import { GridFsMulterConfigService } from 'files/multer-config.service';
     ChatModule,
     FilesModule,
   ],
+  controllers: [ReferenceController],
 })
 export class AppModule {}
