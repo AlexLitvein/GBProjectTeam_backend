@@ -75,7 +75,7 @@ export class UserController {
     status: 200,
     type: UserDto,
   })
-  @Patch()
+  @Patch('update')
   update(@GetUser('_id') userId: string, @Body() dto: EditUserDto) {
     return this.userService.editUser(userId, dto);
   }

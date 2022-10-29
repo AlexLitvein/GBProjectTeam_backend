@@ -14,3 +14,8 @@ export enum DocumentStatus {
   ARCHIVED = 'В архиве',
   CLOSED = 'Завершено',
 }
+
+export const Enums = {
+  ProjectStatus,
+  DocumentStatus,
+};

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 // import { ConfigService } from '../config/config.service.ts';
 import { InjectConnection } from '@nestjs/mongoose';
 import {
@@ -21,6 +25,24 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
 
   createMulterOptions(): MulterModuleOptions {
     return {
+      fileFilter(req, file, cb) {
+        console.log({
+          fileFilter_log: file,
+        });
+
+        if (!/(pdf|doc|jpeg|png)/.test(file.mimetype)) {
+          // Чтобы отклонить, прокиньте в аргументы `false` так: cb(null, false);
+          cb(
+            new BadRequestException(
+              `Недопустимый тип файла ${file.originalname}, требуется (pdf,doc,jpg,png)`,
+            ),
+            false,
+          );
+        } else {
+          // Чтобы принять файл, используется как аргумент `true` таким образом:
+          cb(null, true);
+        }
+      },
       storage: this.gridFsStorage,
     };
   }

@@ -1,9 +1,6 @@
-import {
-  BadRequestException,
-  Injectable,
-  StreamableFile,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Docum, DocumDocument } from 'document/document.shema';
 import { Model, ObjectId } from 'mongoose';
 import { CreateProjectDto, ProjectDto, UpdateProjectDto } from 'project/dto';
 import { ProjectStatus } from 'types';
@@ -14,7 +11,8 @@ export class ProjectService {
   constructor(
     @InjectModel(Project.name, 'nest')
     private projectModel: Model<ProjectDocument>,
-  ) {}
+  ) // @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
+  {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   private async _find(filter: Object) {
