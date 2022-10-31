@@ -48,7 +48,7 @@ export class Docum {
   @ApiProperty({ required: false, enum: DocumentStatus })
   @IsEnum(DocumentStatus)
   @IsOptional()
-  @Prop({ default: DocumentStatus.IN_PROGRESS })
+  @Prop({ default: DocumentStatus.UNDEFINED })
   status: DocumentStatus;
 
   @Prop({ select: false })

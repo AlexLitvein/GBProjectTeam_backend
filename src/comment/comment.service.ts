@@ -22,7 +22,7 @@ export class CommentService {
   //   return this.projectModel
   //     .find(filter)
   //     .populate({
-  //       path: commentProxy.coordinationUsersIds.toString(),
+  //       path: commentProxy.approversIds.toString(),
   //       select: ['firstName', 'lastName'],
   //     })
   //     .populate({

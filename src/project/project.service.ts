@@ -3,8 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Docum, DocumDocument } from 'document/document.shema';
 import { Model, ObjectId } from 'mongoose';
 import { CreateProjectDto, ProjectDto, UpdateProjectDto } from 'project/dto';
-import { ProjectStatus } from 'types';
+import { ProjectState, ProjectStatus } from 'types';
 import { Project, ProjectDocument, projectProxy } from './project.shema';
+import { User } from '../user/user.shema';
+
 
 @Injectable()
 export class ProjectService {
@@ -12,7 +14,7 @@ export class ProjectService {
     @InjectModel(Project.name, 'nest')
     private projectModel: Model<ProjectDocument>,
   ) // @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
-  {}
+  { }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   private async _find(filter: Object) {
@@ -21,7 +23,7 @@ export class ProjectService {
     return this.projectModel
       .find(filter)
       .populate({
-        path: projectProxy.coordinationUsersIds.toString(),
+        path: projectProxy.approversIds.toString(),
         select: ['firstName', 'lastName'],
       })
       .populate({
@@ -34,10 +36,11 @@ export class ProjectService {
       });
   }
 
-  async create(createProjectDto: CreateProjectDto, ownerId: ObjectId) {
+  async create(createProjectDto: CreateProjectDto, ownerId: User) {
     const project = new this.projectModel(createProjectDto);
     project.ownerId = ownerId;
-    project.status = ProjectStatus.DRAFT;
+    project.state = ProjectState.DRAFT;
+    project.status = ProjectStatus.UNDEFINED;
     return await project.save();
   }
 

@@ -1,4 +1,4 @@
-import { ProjectStatus } from 'types';
+import { ProjectState, ProjectStatus } from 'types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import {
@@ -10,6 +10,8 @@ import {
   IsString,
 } from 'class-validator';
 import mongoose, { Document, ObjectId } from 'mongoose';
+import { User } from '../user/user.shema';
+import { Docum } from '../document/document.shema';
 
 export type ProjectDocument = Project & Document;
 
@@ -17,7 +19,8 @@ export type ProjectDocument = Project & Document;
 export class Project {
   @ApiProperty() // for swagger
   @IsString() // for validators
-  @Prop({ required: true, unique: true }) // for mongoose
+  @IsOptional()
+  @Prop({ required: false, default: '' }) // for mongoose
   name: string;
 
   @ApiProperty({ required: false })
@@ -27,13 +30,13 @@ export class Project {
   description: string;
 
   @ApiProperty({ type: String })
-  @IsMongoId()
+  // @IsMongoId()
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
-  ownerId: ObjectId;
+  ownerId: User;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -44,7 +47,7 @@ export class Project {
     required: false,
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Docum' }],
   })
-  documentsIds: ObjectId[];
+  documentsIds: Docum[];
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -55,12 +58,18 @@ export class Project {
     required: false,
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   })
-  coordinationUsersIds: ObjectId[];
+  approversIds: User[];
+
+  @ApiProperty({ required: false, enum: ProjectState })
+  @IsEnum(ProjectState)
+  @IsOptional()
+  @Prop({ default: ProjectState.DRAFT })
+  state: ProjectState;
 
   @ApiProperty({ required: false, enum: ProjectStatus })
   @IsEnum(ProjectStatus)
   @IsOptional()
-  @Prop({ default: ProjectStatus.IN_PROGRESS })
+  @Prop({ default: ProjectStatus.UNDEFINED })
   status: ProjectStatus;
 
   @Prop({ select: false })

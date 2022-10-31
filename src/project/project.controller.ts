@@ -23,6 +23,7 @@ import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
 import { JwtGuard } from 'auth/guard';
 import { GetUser } from 'auth/decorator';
+import { User } from '../user/user.shema';
 
 @ApiExtraModels(ProjectDto, ApiErrorDto)
 @ApiTags('projects')
@@ -35,7 +36,7 @@ import { GetUser } from 'auth/decorator';
 @UseGuards(JwtGuard)
 @Controller('projects')
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) { }
 
   // ======== create ==========
   @ApiBody({
@@ -49,7 +50,7 @@ export class ProjectController {
   })
   @Post('create')
   create(
-    @GetUser('_id') userId: ObjectId,
+    @GetUser('_id') userId: User,
     @Body() createProjectDto: CreateProjectDto,
   ) {
     return this.projectService.create(createProjectDto, userId);

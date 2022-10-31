@@ -26,7 +26,7 @@ export class Comment {
 
   @ApiProperty({ required: false, enum: DocumentStatus })
   @IsEnum(DocumentStatus)
-  @Prop({ default: DocumentStatus.IN_PROGRESS })
+  @Prop({ default: DocumentStatus.UNDEFINED })
   status: DocumentStatus;
 
   @Prop({ select: false })
