@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   UseGuards,
   Get,
+  Delete,
   Param,
   Res,
   HttpException,
@@ -31,7 +32,7 @@ import { UploadFileResponse, UploadFile } from './dto/fileUpload.dto';
 @Controller('files')
 @ApiTags('Files')
 export class FilesController {
-  constructor(private filesService: FilesService) {}
+  constructor(private filesService: FilesService) { }
 
   @Post('uploadOne')
   @ApiOperation({
@@ -129,7 +130,7 @@ export class FilesController {
     return filestream.pipe(res);
   }
 
-  @Get('delete/:id')
+  @Delete('delete/:id')
   @ApiBadRequestResponse({ type: ApiException })
   @ApiCreatedResponse({ type: FileResponseVm })
   async deleteFile(@Param('id') id: string): Promise<FileResponseVm> {
