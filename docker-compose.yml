@@ -18,7 +18,7 @@ services:
       context: https://github.com/AlexLitvein/GBProjectTeam_backend.git#main
     container_name: serv
     environment:
-      DATABASE_URL: mongodb://citizix:S3cret@mongodb:27017/
+      DATABASE_URL: mongodb://citizix:S3cret@mongodb:27020/
       JWT_SECRET: my-secret
     ports:
       - 80:3333
