@@ -6,8 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiResponse, ApiBody, ApiParam, ApiConsumes } from '@nestjs/swagger';
+import { GetUser } from 'auth/decorator';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
 import { ParseObjectIdPipe } from 'validators/mongo';
@@ -22,20 +26,45 @@ import { CreateDocumentDto, DocumDto, UpdateDocumentDto } from './dto';
 })
 @Controller('documents')
 export class DocumentController {
-  constructor(private readonly documentService: DocumentService) {}
+  constructor(private readonly documentService: DocumentService) { }
 
   // ======== create ==========
-  @ApiBody({
-    description: 'Создание документа',
-    type: CreateDocumentDto,
-  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody(
+    // {
+    //     description: 'Создание документа',
+    //     type: CreateDocumentDto,
+    //   }
+    {
+      schema: {
+        type: 'object',
+        properties: {
+          projectId: {
+            type: 'string',
+          },
+          file: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    })
   @ApiResponse({
     status: 201,
     description: 'Successfully created',
     type: DocumDto,
   })
   @Post('create')
-  create(@Body() createDocumentDto: CreateDocumentDto) {
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    // @GetUser('_id') userId: ObjectId,
+    @Body() createDocumentDto: CreateDocumentDto,
+    @UploadedFile() file,
+  ) {
+    // console.log('file.id:', file.id);
+    // console.log('file.originalname:', file.originalname);
+    createDocumentDto.attachedFileId = file.id;
+    createDocumentDto.attachedFileName = file.originalname;
     return this.documentService.create(createDocumentDto);
   }
 

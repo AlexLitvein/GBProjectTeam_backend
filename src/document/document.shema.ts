@@ -24,11 +24,13 @@ export class Docum {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   @Prop({ default: '' })
   attachedFileName: string;
 
   @ApiProperty({ type: 'string' })
   @IsMongoId()
+  @IsOptional()
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
