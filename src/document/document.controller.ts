@@ -29,6 +29,10 @@ export class DocumentController {
   constructor(private readonly documentService: DocumentService) { }
 
   // ======== create ==========
+  @ApiParam({
+    name: 'projectId',
+    description: 'id проекта документов',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody(
     // {
@@ -39,9 +43,9 @@ export class DocumentController {
       schema: {
         type: 'object',
         properties: {
-          projectId: {
-            type: 'string',
-          },
+          // projectId: {
+          //   type: 'string',
+          // },
           file: {
             type: 'string',
             format: 'binary',
@@ -54,15 +58,18 @@ export class DocumentController {
     description: 'Successfully created',
     type: DocumDto,
   })
-  @Post('create')
+  @Post('create/:projectId')
   @UseInterceptors(FileInterceptor('file'))
   create(
     // @GetUser('_id') userId: ObjectId,
-    @Body() createDocumentDto: CreateDocumentDto,
+    // @Body() createDocumentDto: CreateDocumentDto,
+    @Param('projectId', new ParseObjectIdPipe()) projectId: ObjectId,
     @UploadedFile() file,
   ) {
     // console.log('file.id:', file.id);
     // console.log('file.originalname:', file.originalname);
+    const createDocumentDto = new CreateDocumentDto();
+    createDocumentDto.projectId = projectId;
     createDocumentDto.attachedFileId = file.id;
     createDocumentDto.attachedFileName = file.originalname;
     return this.documentService.create(createDocumentDto);
