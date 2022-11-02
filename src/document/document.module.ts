@@ -3,6 +3,8 @@ import { DocumentService } from './document.service';
 import { DocumentController } from './document.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Docum, DocumSchema } from './document.shema';
+import { MulterModule } from '@nestjs/platform-express';
+import { GridFsMulterConfigService } from 'files/multer-config.service';
 
 @Module({
   imports: [
@@ -10,8 +12,11 @@ import { Docum, DocumSchema } from './document.shema';
       [{ name: Docum.name, schema: DocumSchema }],
       'nest',
     ),
+    MulterModule.registerAsync({
+      useClass: GridFsMulterConfigService,
+    }),
   ],
   controllers: [DocumentController],
-  providers: [DocumentService],
+  providers: [GridFsMulterConfigService, DocumentService],
 })
-export class DocumentModule {}
+export class DocumentModule { }
