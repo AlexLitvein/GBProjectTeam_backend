@@ -9,7 +9,7 @@ export class UploadFileResponse {
   })
   id: ObjectId;
   @ApiProperty()
-  originalname: string;
+  originalName: string;
   @ApiProperty()
   uploadDate: Date;
 }

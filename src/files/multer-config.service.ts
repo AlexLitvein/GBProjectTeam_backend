@@ -26,10 +26,6 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
   createMulterOptions(): MulterModuleOptions {
     return {
       fileFilter(req, file, cb) {
-        console.log({
-          fileFilter_log: file,
-        });
-
         if (!/(pdf|doc|jpeg|png)/.test(file.mimetype)) {
           // Чтобы отклонить, прокиньте в аргументы `false` так: cb(null, false);
           cb(

@@ -54,10 +54,10 @@ export class FilesController {
     type: UploadFileResponse,
   })
   @UseInterceptors(FileInterceptor('file'))
-  upload(@UploadedFile() file) {
+  upload(@UploadedFile() file): UploadFileResponse {
     return {
       id: file.id,
-      originalname: file.originalname,
+      originalName: file.originalname,
       uploadDate: file.uploadDate,
     };
   }
@@ -73,10 +73,10 @@ export class FilesController {
     type: [UploadFileResponse],
   })
   @UseInterceptors(FilesInterceptor('files'))
-  uploadMany(@UploadedFiles() files: UploadFile[]) {
+  uploadMany(@UploadedFiles() files: UploadFile[]): UploadFileResponse[] {
     return files.map((file) => ({
       id: file.id,
-      originalname: file.originalname,
+      originalName: file.originalName,
       uploadDate: file.uploadDate,
     }));
   }
