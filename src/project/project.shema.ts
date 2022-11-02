@@ -17,7 +17,7 @@ export type ProjectDocument = Project & Document;
 export class Project {
   @ApiProperty() // for swagger
   @IsString() // for validators
-  @Prop({ required: true, unique: true }) // for mongoose
+  @Prop({ required: false, default: '' }) // for mongoose
   name: string;
 
   @ApiProperty({ required: false })
