@@ -15,9 +15,9 @@ export type ProjectDocument = Project & Document;
 
 @Schema({ timestamps: true })
 export class Project {
-  @ApiProperty() // for swagger
-  @IsString() // for validators
-  @Prop({ required: false, default: '' }) // for mongoose
+  @ApiProperty({ required: false }) // for swagger
+  // @IsString() // for validators
+  @Prop({ default: '' }) // for mongoose
   name: string;
 
   @ApiProperty({ required: false })
