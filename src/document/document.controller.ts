@@ -10,7 +10,13 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiResponse, ApiBody, ApiParam, ApiConsumes } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { GetUser } from 'auth/decorator';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
@@ -29,50 +35,36 @@ export class DocumentController {
   constructor(private readonly documentService: DocumentService) { }
 
   // ======== create ==========
-  @ApiParam({
-    name: 'projectId',
-    description: 'id проекта документов',
-  })
+  // @ApiParam({
+  //   name: 'projectId',
+  //   description: 'id проекта документов',
+  // })
   @ApiConsumes('multipart/form-data')
-  @ApiBody(
-    // {
-    //     description: 'Создание документа',
-    //     type: CreateDocumentDto,
-    //   }
-    {
-      schema: {
-        type: 'object',
-        properties: {
-          // projectId: {
-          //   type: 'string',
-          // },
-          file: {
-            type: 'string',
-            format: 'binary',
-          },
-        },
-      },
-    })
+  @ApiBody({
+    description: 'Создание документа',
+    type: CreateDocumentDto,
+  })
   @ApiResponse({
     status: 201,
     description: 'Successfully created',
     type: DocumDto,
   })
-  @Post('create/:projectId')
+  @Post('create/')
+  // @Post('create/:projectId')
   @UseInterceptors(FileInterceptor('file'))
   create(
     // @GetUser('_id') userId: ObjectId,
-    // @Body() createDocumentDto: CreateDocumentDto,
-    @Param('projectId', new ParseObjectIdPipe()) projectId: ObjectId,
+    @Body() createDocumentDto: CreateDocumentDto,
+    // @Param('projectId', new ParseObjectIdPipe()) projectId: ObjectId,
     @UploadedFile() file,
   ) {
-    // console.log('file.id:', file.id);
-    // console.log('file.originalname:', file.originalname);
-    const createDocumentDto = new CreateDocumentDto();
-    createDocumentDto.projectId = projectId;
-    createDocumentDto.attachedFileId = file.id;
-    createDocumentDto.attachedFileName = file.originalname;
-    return this.documentService.create(createDocumentDto);
+    const documDto = new DocumDto();
+    documDto.projectId = createDocumentDto.projectId;
+    documDto.attachedFileId = file.id;
+    if (!createDocumentDto.attachedFileName) {
+      documDto.attachedFileName = file.originalname;
+    } else documDto.attachedFileName = createDocumentDto.attachedFileName;
+    return this.documentService.create(documDto);
   }
 
   // ======== getMany ==========
