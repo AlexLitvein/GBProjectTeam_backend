@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Docum, DocumDocument } from './document.shema';
-import { CreateDocumentDto, UpdateDocumentDto } from './dto';
+import { CreateDocumentDto, DocumDto, UpdateDocumentDto } from './dto';
 
 @Injectable()
 export class DocumentService {
@@ -10,8 +10,8 @@ export class DocumentService {
     @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
   ) {}
 
-  async create(createDocumentDto: CreateDocumentDto) {
-    const docum = new this.documModel(createDocumentDto);
+  async create(DocumDto: DocumDto) {
+    const docum = new this.documModel(DocumDto);
     return await docum.save();
   }
 

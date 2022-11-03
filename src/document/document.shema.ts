@@ -15,14 +15,15 @@ export type DocumDocument = Docum & Document;
 
 @Schema({ timestamps: true })
 export class Docum {
-  @ApiProperty({ type: 'string' })
+  @ApiProperty({ type: 'string', format: 'string', required: true })
   @IsMongoId()
+  @IsString()
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
   projectId: ObjectId;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'string', format: 'string', required: false })
   @IsString()
   @IsOptional()
   @Prop({ default: '' })
