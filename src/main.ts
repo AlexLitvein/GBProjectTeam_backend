@@ -15,8 +15,7 @@ const options = {
           scheme: 'bearer',
           bearerFormat: 'JWT',
         },
-        value:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MzNjMmYxNTNjMGY1NzJlZDAxYmMwM2MiLCJlbWFpbCI6ImR1Y2tAZ21haWwuY29tIiwiaWF0IjoxNjY0ODg4NTk3LCJleHAiOjE2NjU0ODg1Mzd9.O1i5CT5bUu0_RCnx1C_anDZnyTP4vilCp66PS-jfG0U',
+        value: process.env.TOKEN,
       },
     },
   },
@@ -28,7 +27,6 @@ async function bootstrap() {
     origin: '*',
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-
   const config = new DocumentBuilder()
     .addBearerAuth(undefined, 'defaultBearerAuth')
     .setTitle('GBProjectTeam')
