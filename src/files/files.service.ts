@@ -23,12 +23,12 @@ export class FilesService {
     });
   }
 
-  async readStream(id: string): Promise<GridFSBucketReadStream> {
+  async readStream(id: ObjectId): Promise<GridFSBucketReadStream> {
     const result = await this.fileModel.findById(id);
     return await result.read();
   }
 
-  async findInfo(id: string): Promise<FileInfoVm> {
+  async findInfo(id: ObjectId): Promise<FileInfoVm> {
     const result = await this.fileModel.findById(id);
     return {
       filename: result.filename,
@@ -39,7 +39,7 @@ export class FilesService {
     };
   }
 
-  async deleteFile(_id: string): Promise<any> {
+  async deleteFile(_id: ObjectId): Promise<any> {
     const result = await this.fileModel.findById(_id);
     console.log('result', result);
     function deleteFileAsync() {
