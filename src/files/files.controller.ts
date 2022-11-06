@@ -11,6 +11,7 @@ import {
   Res,
   HttpException,
   HttpStatus,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -129,7 +130,7 @@ export class FilesController {
     return filestream.pipe(res);
   }
 
-  @Get('delete/:id')
+  @Delete('delete/:id')
   @ApiBadRequestResponse({ type: ApiException })
   @ApiCreatedResponse({ type: FileResponseVm })
   async deleteFile(@Param('id') id: string): Promise<FileResponseVm> {
