@@ -6,6 +6,7 @@ import { User, UserSchema } from './user.shema';
 // import { StorageService } from 'storage/storage.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { GridFsMulterConfigService } from 'files/multer-config.service';
+import { FilesService } from 'files/files.service';
 // import { StorageModule } from 'storage/storage.module';
 
 @Module({
@@ -26,7 +27,7 @@ import { GridFsMulterConfigService } from 'files/multer-config.service';
     // StorageModule,
   ],
   controllers: [UserController],
-  providers: [GridFsMulterConfigService, UserService],
+  providers: [GridFsMulterConfigService, UserService, FilesService],
   // exports: [UserService],
 })
 export class UserModule {}
