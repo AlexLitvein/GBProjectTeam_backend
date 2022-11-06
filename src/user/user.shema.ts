@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsOptional } from 'class-validator';
-import { Document } from 'mongoose';
+import { IsEmail, IsMongoId, IsOptional } from 'class-validator';
+import mongoose, { Document, ObjectId } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -35,6 +35,14 @@ export class User {
 
   @Prop({ required: true, select: false })
   hash: string;
+
+  @ApiProperty({ type: 'string' })
+  @IsMongoId()
+  @IsOptional()
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  avatar: ObjectId;
 
   @Prop({ select: false })
   __v: number;
