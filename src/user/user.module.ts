@@ -3,7 +3,9 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './user.shema';
-import { StorageService } from 'storage/storage.service';
+// import { StorageService } from 'storage/storage.service';
+import { MulterModule } from '@nestjs/platform-express';
+import { GridFsMulterConfigService } from 'files/multer-config.service';
 // import { StorageModule } from 'storage/storage.module';
 
 @Module({
@@ -18,10 +20,13 @@ import { StorageService } from 'storage/storage.service';
       [{ name: User.name, schema: UserSchema }],
       'nest',
     ),
+    MulterModule.registerAsync({
+      useClass: GridFsMulterConfigService,
+    }),
     // StorageModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [GridFsMulterConfigService, UserService],
   // exports: [UserService],
 })
 export class UserModule {}
