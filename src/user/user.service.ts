@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EditUserDto, UserDto } from './dto';
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, Query, UpdateQuery } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.shema';
 import { StorageService } from 'storage/storage.service';
@@ -11,8 +11,8 @@ export class UserService {
     @InjectModel(User.name, 'nest') private userModel: Model<UserDocument>,
   ) {}
 
-  findOne(id: ObjectId) {
-    return this.userModel.findById(id);
+  async findOne(id: ObjectId): Promise<User> {
+    return await this.userModel.findById(id);
   }
 
   async findAll() {
@@ -38,6 +38,20 @@ export class UserService {
           'Пользователь с таким email уже существует',
         );
       }
+      throw error;
+    }
+    return user;
+  }
+
+  async setUserAvatar(userId: string, fileId: string) {
+    let user: UserDto = null;
+    try {
+      user = await this.userModel.findByIdAndUpdate(
+        userId,
+        { $set: { avatar: fileId } },
+        { new: true },
+      );
+    } catch (error) {
       throw error;
     }
     return user;
