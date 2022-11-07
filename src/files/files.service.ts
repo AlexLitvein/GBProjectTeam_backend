@@ -39,8 +39,8 @@ export class FilesService {
     };
   }
 
-  async deleteFile(_id: ObjectId): Promise<any> {
-    const result = await this.fileModel.findById(_id);
+  async deleteFile(id: ObjectId): Promise<any> {
+    const result = await this.fileModel.findById(id);
     console.log('result', result);
     function deleteFileAsync() {
       return new Promise(function (resolve, reject) {
