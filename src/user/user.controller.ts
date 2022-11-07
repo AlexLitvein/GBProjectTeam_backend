@@ -120,7 +120,7 @@ export class UserController {
   })
   @Get(':id/avatar')
   @ApiBadRequestResponse({ type: ApiException })
-  async getFile(@Param('id') id: ObjectId, @Res() res) {
+  async getAvatar(@Param('id') id: ObjectId, @Res() res) {
     const user = await this.userService.findOne(id);
     if (user.avatar) {
       const file = await this.filesService.findInfo(user.avatar);
