@@ -18,6 +18,7 @@ export type UserDocument = User & Document;
 export class User {
   @ApiProperty()
   // @Prop({ required: true, unique: true })
+  @IsEmail()
   @Prop({ unique: true })
   email: string;
 
@@ -39,10 +40,8 @@ export class User {
   @ApiProperty({ type: 'string' })
   @IsMongoId()
   @IsOptional()
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-  })
-  avatar: ObjectId;
+  @Prop({ required: false, type: mongoose.Schema.Types.ObjectId })
+  avatar?: ObjectId;
 
   @Prop({ select: false })
   __v: number;
