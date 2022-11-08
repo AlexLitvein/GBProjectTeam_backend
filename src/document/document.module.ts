@@ -19,4 +19,4 @@ import { GridFsMulterConfigService } from 'files/multer-config.service';
   controllers: [DocumentController],
   providers: [GridFsMulterConfigService, DocumentService],
 })
-export class DocumentModule { }
+export class DocumentModule {}

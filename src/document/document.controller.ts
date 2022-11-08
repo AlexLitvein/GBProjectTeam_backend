@@ -32,7 +32,7 @@ import { CreateDocumentDto, DocumDto, UpdateDocumentDto } from './dto';
 })
 @Controller('documents')
 export class DocumentController {
-  constructor(private readonly documentService: DocumentService) { }
+  constructor(private readonly documentService: DocumentService) {}
 
   // ======== create ==========
   // @ApiParam({
