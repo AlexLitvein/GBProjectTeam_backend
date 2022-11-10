@@ -10,9 +10,8 @@ import { Project, ProjectDocument, projectProxy } from './project.shema';
 export class ProjectService {
   constructor(
     @InjectModel(Project.name, 'nest')
-    private projectModel: Model<ProjectDocument>,
-  ) // @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
-  {}
+    private projectModel: Model<ProjectDocument>, // @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
+  ) {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   private async _find(filter: Object) {
@@ -43,6 +42,13 @@ export class ProjectService {
 
   findOne(id: ObjectId) {
     return this._find({ _id: id });
+  }
+
+  findAllWhereUser(id: ObjectId) {
+    return this._find({
+      $or: [{ ownerId: id }, { coordinationUsersIds: id }],
+    });
+    // {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
   }
 
   async findAll() {

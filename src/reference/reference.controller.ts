@@ -7,16 +7,20 @@ import { Enums } from 'types';
 export class ReferenceController {
   // ======== getEnums ==========
   @ApiParam({
-    name: 'enumName',
+    name: 'name',
     description: 'имя перечисления',
+    schema: {
+      type: 'string',
+      enum: ['ProjectStatus', 'DocumentStatus'],
+    },
   })
   @ApiResponse({
     status: 200,
     description: 'Объект перечисления или undefined',
     type: Object,
   })
-  @Get('enums/:enumName')
-  async getEnums(@Param('enumName') enumName: string) {
-    return Enums[enumName];
+  @Get('enums/:name')
+  async getEnums(@Param('name') name: string) {
+    return Enums[name];
   }
 }

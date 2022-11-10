@@ -74,15 +74,17 @@ export class ProjectController {
 
   // ======== getMany ==========
   @ApiOperation({
-    description: 'Получить все проекты документов',
+    description:
+      'Получить все проекты документов связанные с авторизованным польователем',
   })
   @ApiResponse({
     status: 200,
     type: [ProjectDto],
   })
   @Get()
-  getMany() {
-    return this.projectService.findAll();
+  getMany(@GetUser('_id') userId: ObjectId) {
+    // return this.projectService.findAll();
+    return this.projectService.findAllWhereUser(userId);
   }
 
   // ======== update ==========
