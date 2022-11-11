@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Docum, DocumDocument } from 'document/document.shema';
 import { Model, ObjectId } from 'mongoose';
@@ -44,25 +44,54 @@ export class ProjectService {
     return this._find({ _id: id });
   }
 
+  // INFO: {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
   findAllWhereUser(id: ObjectId) {
     return this._find({
       $or: [{ ownerId: id }, { coordinationUsersIds: id }],
     });
-    // {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
   }
 
   async findAll() {
     return this._find({});
   }
 
-  async update(id: ObjectId, updateProjectDto: UpdateProjectDto) {
-    return await this.projectModel.findOneAndUpdate(
-      { _id: id },
+  async update(
+    userId: ObjectId,
+    projectId: ObjectId,
+    updateProjectDto: UpdateProjectDto,
+  ) {
+    const prj = await this.projectModel.findOneAndUpdate(
+      { _id: projectId, ownerId: userId },
       updateProjectDto,
       {
         new: true,
       },
     );
+
+    if (prj) {
+      return prj;
+    } else {
+      throw new ForbiddenException(
+        'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
+      );
+    }
+
+    // const prj = await this.projectModel.findOne({ _id: projectId });
+    // if (prj) {
+    //   if (JSON.stringify(userId) !== JSON.stringify(prj.ownerId)) {
+    //     throw new ForbiddenException(
+    //       'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
+    //     );
+    //   } else {
+    //     return this.projectModel.findByIdAndUpdate(
+    //       { _id: projectId },
+    //       updateProjectDto,
+    //       {
+    //         new: true,
+    //       },
+    //     );
+    //   }
+    // } else return prj;
   }
 
   remove(id: ObjectId) {

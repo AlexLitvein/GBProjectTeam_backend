@@ -104,11 +104,39 @@ export class ProjectController {
   })
   @Patch('update/:id')
   update(
-    @Param('id') id: ObjectId,
+    @GetUser('_id') userId: ObjectId,
+    @Param('id') projectId: ObjectId,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
-    return this.projectService.update(id, updateProjectDto);
+    // console.log({
+    //   updateProjectDto_log: updateProjectDto,
+    // });
+    return this.projectService.update(userId, projectId, updateProjectDto);
   }
+
+  // ======== setStatus ==========
+  // @ApiOperation({
+  //   description: 'Обновить проект документов',
+  // })
+  // @ApiBody({
+  //   type: UpdateProjectDto,
+  // })
+  // @ApiResponse({
+  //   status: 200,
+  //   type: [ProjectDto],
+  // })
+  // @ApiParam({
+  //   name: 'id',
+  //   description: 'id пакета документов',
+  // })
+  // @Patch('setStatus/:id')
+  // setStatus(
+  //   @GetUser('_id') userId: ObjectId,
+  //   @Param('id') projectId: ObjectId,
+  //   @Body() updateProjectDto: UpdateProjectDto,
+  // ) {
+  //   return this.projectService.update(userId, projectId, updateProjectDto);
+  // }
 
   // ======== delete ==========
   @ApiOperation({
