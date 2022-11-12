@@ -1,8 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Docum, DocumDocument } from 'document/document.shema';
 import { Model, ObjectId } from 'mongoose';
-import { CreateProjectDto, ProjectDto, UpdateProjectDto } from 'project/dto';
+import {
+  CreateProjectDto,
+  ProjectDto,
+  SetProjectStatusDto,
+  UpdateProjectDto,
+} from 'project/dto';
 import { ProjectStatus } from 'types';
 import { Project, ProjectDocument, projectProxy } from './project.shema';
 
@@ -20,7 +24,7 @@ export class ProjectService {
     return this.projectModel
       .find(filter)
       .populate({
-        path: projectProxy.coordinationUsersIds.toString(),
+        path: projectProxy.coordinationUsers.toString(),
         select: ['firstName', 'lastName'],
       })
       .populate({
@@ -33,10 +37,25 @@ export class ProjectService {
       });
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  private async _findOneAndUpdate(filter: Object, update: Object) {
+    const prj = await this.projectModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
+
+    if (prj) {
+      return prj;
+    } else {
+      throw new ForbiddenException(
+        'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
+      );
+    }
+  }
+
   async create(createProjectDto: CreateProjectDto, ownerId: ObjectId) {
     const project = new this.projectModel(createProjectDto);
     project.ownerId = ownerId;
-    project.status = ProjectStatus.DRAFT;
+    // project.status = ProjectStatus.DRAFT; // выставляется по умолчанию в project.shema
     return await project.save();
   }
 
@@ -47,7 +66,11 @@ export class ProjectService {
   // INFO: {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
   findAllWhereUser(id: ObjectId) {
     return this._find({
-      $or: [{ ownerId: id }, { coordinationUsersIds: id }],
+      // $or: [{ ownerId: id }, { coordinationUsersIds: id }],
+      $or: [
+        { ownerId: id },
+        { [`${projectProxy.coordinationUsers}.userId`]: id },
+      ],
     });
   }
 
@@ -55,43 +78,49 @@ export class ProjectService {
     return this._find({});
   }
 
+  async addStatus(userId: ObjectId, projectStatus: SetProjectStatusDto) {
+    // findOneAndUpdate({myId: 2, 'arr.name': 'pete'}, {$set: {'arr.$.status': "new_pete_1" }})
+    // const prj = await this.projectModel.findOneAndUpdate(
+    //   {
+    //     _id: projectStatus.projectId,
+    //     'coordinationUsers.userId': userId,
+    //   },
+    //   { $set: { 'coordinationUsers.$.status': projectStatus.status } },
+    //   {
+    //     new: true,
+    //   },
+    // );
+
+    // if (prj) {
+    //   return prj;
+    // } else {
+    //   throw new ForbiddenException(
+    //     'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
+    //   );
+    // }
+    return this._findOneAndUpdate(
+      {
+        _id: projectStatus.projectId,
+        'coordinationUsers.userId': userId,
+      },
+      { $set: { 'coordinationUsers.$.status': projectStatus.status } },
+    );
+  }
+
   async update(
     userId: ObjectId,
     projectId: ObjectId,
     updateProjectDto: UpdateProjectDto,
   ) {
-    const prj = await this.projectModel.findOneAndUpdate(
+    updateProjectDto.coordinationUsers.forEach((el) => {
+      el.settedStatus = ProjectStatus.IN_PROGRESS;
+    });
+
+    return this._findOneAndUpdate(
       { _id: projectId, ownerId: userId },
-      updateProjectDto,
-      {
-        new: true,
-      },
+      // updateProjectDto,
+      { ...updateProjectDto, $set: { status: ProjectStatus.IN_PROGRESS } },
     );
-
-    if (prj) {
-      return prj;
-    } else {
-      throw new ForbiddenException(
-        'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
-      );
-    }
-
-    // const prj = await this.projectModel.findOne({ _id: projectId });
-    // if (prj) {
-    //   if (JSON.stringify(userId) !== JSON.stringify(prj.ownerId)) {
-    //     throw new ForbiddenException(
-    //       'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
-    //     );
-    //   } else {
-    //     return this.projectModel.findByIdAndUpdate(
-    //       { _id: projectId },
-    //       updateProjectDto,
-    //       {
-    //         new: true,
-    //       },
-    //     );
-    //   }
-    // } else return prj;
   }
 
   remove(id: ObjectId) {

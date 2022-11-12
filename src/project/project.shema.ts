@@ -11,6 +11,31 @@ import {
 } from 'class-validator';
 import mongoose, { Document, ObjectId } from 'mongoose';
 
+@Schema()
+export class CoordinationUser {
+  @ApiProperty({ type: mongoose.Schema.Types.ObjectId })
+  @IsMongoId()
+  @Prop({ type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } })
+  userId: ObjectId;
+
+  // @ApiProperty({ type: 'string' })
+  @IsEnum(ProjectStatus)
+  @Prop({ default: ProjectStatus.IN_PROGRESS })
+  settedStatus: ProjectStatus;
+}
+
+// export class CoordinationUser {
+//   @ApiProperty({ type: 'string' })
+//   @IsMongoId()
+//   // @Prop({ type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } })
+//   userId: ObjectId;
+
+//   @ApiProperty({ type: 'string' })
+//   @IsString()
+//   @IsEnum(ProjectStatus)
+//   settedStatus: ProjectStatus;
+// }
+
 export type ProjectDocument = Project & Document;
 
 @Schema({ timestamps: true })
@@ -46,21 +71,32 @@ export class Project {
   })
   documentsIds: ObjectId[];
 
+  // @ApiProperty({ required: false })
+  // @IsOptional()
+  // @IsMongoId({ each: true })
+  // @IsArray()
+  // @ArrayUnique()
+  // @Prop({
+  //   required: false,
+  //   type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  // })
+  // coordinationUsersIds: ObjectId[];
+
   @ApiProperty({ required: false })
   @IsOptional()
-  @IsMongoId({ each: true })
+  // @IsMongoId({ each: true })
   @IsArray()
-  @ArrayUnique()
+  // @ArrayUnique()
   @Prop({
     required: false,
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    // type: [CoordinationUser],
   })
-  coordinationUsersIds: ObjectId[];
+  coordinationUsers: CoordinationUser[];
 
   @ApiProperty({ required: false, enum: ProjectStatus })
   @IsEnum(ProjectStatus)
   @IsOptional()
-  @Prop({ default: ProjectStatus.IN_PROGRESS })
+  @Prop({ default: ProjectStatus.DRAFT })
   status: ProjectStatus;
 
   @Prop({ select: false })
