@@ -9,7 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto, UpdateProjectDto, ProjectDto } from 'project/dto';
+import {
+  CreateProjectDto,
+  UpdateProjectDto,
+  ProjectDto,
+  SetDocumentStatusDto,
+} from 'project/dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -104,10 +109,33 @@ export class ProjectController {
   })
   @Patch('update/:id')
   update(
-    @Param('id') id: ObjectId,
+    @GetUser('_id') userId: ObjectId,
+    @Param('id') projectId: ObjectId,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
-    return this.projectService.update(id, updateProjectDto);
+    // console.log({
+    //   updateProjectDto_log: updateProjectDto,
+    // });
+    return this.projectService.update(userId, projectId, updateProjectDto);
+  }
+
+  // ======== addStatus ==========
+  @ApiOperation({
+    description: 'Добавить своё "решение" по проекту',
+  })
+  @ApiBody({
+    type: SetDocumentStatusDto,
+  })
+  @ApiResponse({
+    status: 201,
+    type: [ProjectDto],
+  })
+  @Post('addStatus')
+  addStatus(
+    @GetUser('_id') userId: ObjectId,
+    @Body() documentStatus: SetDocumentStatusDto,
+  ) {
+    return this.projectService.addStatus(userId, documentStatus);
   }
 
   // ======== delete ==========

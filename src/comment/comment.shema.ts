@@ -2,21 +2,25 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
 import mongoose, { Document, ObjectId } from 'mongoose';
-import { DocumentStatus } from 'types';
+import { ProjectStatus, UserPopulate } from 'types';
 
 export type CommentDocument = Comment & Document;
 
 @Schema({ timestamps: true })
 export class Comment {
-  @ApiProperty({ type: 'string' })
+  @ApiProperty({ type: UserPopulate })
   @IsMongoId()
-  @Prop({ type: mongoose.Schema.Types.ObjectId })
-  userId: ObjectId;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  })
+  user: ObjectId;
 
   @ApiProperty({ type: 'string' })
   @IsMongoId()
   @Prop({ type: mongoose.Schema.Types.ObjectId })
-  documentId: ObjectId;
+  // documentId: ObjectId;
+  projectId: ObjectId;
 
   @ApiProperty()
   @IsString()
@@ -24,10 +28,10 @@ export class Comment {
   @Prop({ required: false })
   message: string;
 
-  @ApiProperty({ required: false, enum: DocumentStatus })
-  @IsEnum(DocumentStatus)
-  @Prop({ default: DocumentStatus.IN_PROGRESS })
-  status: DocumentStatus;
+  @ApiProperty({ required: false, enum: ProjectStatus })
+  @IsEnum(ProjectStatus)
+  @Prop({ enum: ProjectStatus, default: ProjectStatus.IN_PROGRESS })
+  status: ProjectStatus;
 
   @Prop({ select: false })
   __v: number;

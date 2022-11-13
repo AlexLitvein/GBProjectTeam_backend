@@ -11,12 +11,23 @@ import {
 } from 'class-validator';
 import mongoose, { Document, ObjectId } from 'mongoose';
 
+export class CoordinationUser {
+  @ApiProperty({ type: 'string' })
+  // @IsMongoId()
+  userId: ObjectId;
+
+  @ApiProperty({ enum: ProjectStatus })
+  // @IsString()
+  // @IsEnum(ProjectStatus)
+  settedStatus: ProjectStatus;
+}
+
 export type ProjectDocument = Project & Document;
 
 @Schema({ timestamps: true })
 export class Project {
   @ApiProperty({ required: false }) // for swagger
-  // @IsString() // for validators
+  @IsString() // for validators
   @Prop({ default: '' }) // for mongoose
   name: string;
 
@@ -29,7 +40,6 @@ export class Project {
   @ApiProperty({ type: String })
   @IsMongoId()
   @Prop({
-    required: true,
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
@@ -46,21 +56,40 @@ export class Project {
   })
   documentsIds: ObjectId[];
 
-  @ApiProperty({ required: false })
+  // @ApiProperty({ required: false })
+  // @IsOptional()
+  // @IsMongoId({ each: true })
+  // @IsArray()
+  // @ArrayUnique()
+  // @Prop({
+  //   required: false,
+  //   type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  // })
+  // coordinationUsersIds: ObjectId[];
+
+  @ApiProperty({ required: false, type: [CoordinationUser] })
   @IsOptional()
-  @IsMongoId({ each: true })
   @IsArray()
   @ArrayUnique()
   @Prop({
     required: false,
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    type: [
+      {
+        _id: false,
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        settedStatus: { type: String },
+      },
+    ],
   })
-  coordinationUsersIds: ObjectId[];
+  coordinationUsers: CoordinationUser[]; // CoordinationUser[];
 
   @ApiProperty({ required: false, enum: ProjectStatus })
   @IsEnum(ProjectStatus)
   @IsOptional()
-  @Prop({ default: ProjectStatus.IN_PROGRESS })
+  @Prop({ default: ProjectStatus.DRAFT })
   status: ProjectStatus;
 
   @Prop({ select: false })

@@ -1,8 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Docum, DocumDocument } from 'document/document.shema';
+import { CommentService } from 'comment/comment.service';
+import { CreateCommentDto } from 'comment/dto';
 import { Model, ObjectId } from 'mongoose';
-import { CreateProjectDto, ProjectDto, UpdateProjectDto } from 'project/dto';
+import {
+  CreateProjectDto,
+  ProjectDto,
+  SetDocumentStatusDto,
+  UpdateProjectDto,
+} from 'project/dto';
 import { ProjectStatus } from 'types';
 import { Project, ProjectDocument, projectProxy } from './project.shema';
 
@@ -11,6 +17,7 @@ export class ProjectService {
   constructor(
     @InjectModel(Project.name, 'nest')
     private projectModel: Model<ProjectDocument>, // @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
+    private commentService: CommentService,
   ) {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -20,7 +27,7 @@ export class ProjectService {
     return this.projectModel
       .find(filter)
       .populate({
-        path: projectProxy.coordinationUsersIds.toString(),
+        path: projectProxy.coordinationUsers.toString(),
         select: ['firstName', 'lastName'],
       })
       .populate({
@@ -33,10 +40,25 @@ export class ProjectService {
       });
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  private async _findOneAndUpdate(filter: Object, update: Object) {
+    const prj = await this.projectModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
+
+    if (prj) {
+      return prj;
+    } else {
+      throw new ForbiddenException(
+        'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
+      );
+    }
+  }
+
   async create(createProjectDto: CreateProjectDto, ownerId: ObjectId) {
     const project = new this.projectModel(createProjectDto);
     project.ownerId = ownerId;
-    project.status = ProjectStatus.DRAFT;
+    // project.status = ProjectStatus.DRAFT; // выставляется по умолчанию в project.shema
     return await project.save();
   }
 
@@ -44,24 +66,61 @@ export class ProjectService {
     return this._find({ _id: id });
   }
 
+  // INFO: {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
   findAllWhereUser(id: ObjectId) {
     return this._find({
-      $or: [{ ownerId: id }, { coordinationUsersIds: id }],
+      // $or: [{ ownerId: id }, { coordinationUsersIds: id }],
+      $or: [
+        { ownerId: id },
+        { [`${projectProxy.coordinationUsers}.userId`]: id },
+      ],
     });
-    // {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
   }
 
   async findAll() {
     return this._find({});
   }
 
-  async update(id: ObjectId, updateProjectDto: UpdateProjectDto) {
-    return await this.projectModel.findOneAndUpdate(
-      { _id: id },
-      updateProjectDto,
+  async addStatus(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
+    const prj = await this._findOneAndUpdate(
       {
-        new: true,
+        _id: documentStatus.projectId,
+        'coordinationUsers.userId': userId,
       },
+      { $set: { 'coordinationUsers.$.settedStatus': documentStatus.status } },
+    );
+
+    if (prj) {
+      const comment: CreateCommentDto = {
+        user: userId,
+        projectId: documentStatus.projectId,
+        message: documentStatus.message,
+        status: documentStatus.status,
+      };
+      this.commentService.create(comment);
+
+      const status = prj.coordinationUsers.reduce(
+        (acc, el) => (acc &&= el.settedStatus === ProjectStatus.APPROVED),
+        true,
+      );
+      return status && prj.set('status', ProjectStatus.APPROVED);
+    }
+
+    return prj;
+  }
+
+  async update(
+    userId: ObjectId,
+    projectId: ObjectId,
+    updateProjectDto: UpdateProjectDto,
+  ) {
+    updateProjectDto.coordinationUsers.forEach((el) => {
+      el.settedStatus = ProjectStatus.IN_PROGRESS;
+    });
+
+    return this._findOneAndUpdate(
+      { _id: projectId, ownerId: userId },
+      { ...updateProjectDto, $set: { status: ProjectStatus.IN_PROGRESS } },
     );
   }
 

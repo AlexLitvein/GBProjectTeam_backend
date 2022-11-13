@@ -1,4 +1,4 @@
-import { DocumentStatus } from 'types';
+// import { DocumentStatus } from 'types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import {
@@ -15,15 +15,15 @@ export type DocumDocument = Docum & Document;
 
 @Schema({ timestamps: true })
 export class Docum {
-  @ApiProperty({ type: 'string', format: 'string', required: true })
+  @ApiProperty({ type: 'string', required: true })
   @IsMongoId()
-  @IsString()
+  // @IsString()
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
   })
   projectId: ObjectId;
 
-  @ApiProperty({ type: 'string', format: 'string', required: false })
+  @ApiProperty({ type: 'string', required: false })
   @IsString()
   @IsOptional()
   @Prop({ default: '' })
@@ -48,11 +48,11 @@ export class Docum {
   // })
   // commentsIds: ObjectId[];
 
-  @ApiProperty({ required: false, enum: DocumentStatus })
-  @IsEnum(DocumentStatus)
-  @IsOptional()
-  @Prop({ default: DocumentStatus.IN_PROGRESS })
-  status: DocumentStatus;
+  // @ApiProperty({ required: false, enum: DocumentStatus })
+  // @IsEnum(DocumentStatus)
+  // @IsOptional()
+  // @Prop({ default: DocumentStatus.IN_PROGRESS })
+  // status: DocumentStatus;
 
   @Prop({ select: false })
   __v: number;

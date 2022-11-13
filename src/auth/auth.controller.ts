@@ -25,6 +25,8 @@ export class AuthController {
   @Post('signup') // конечн точка
   signup(@Body() dto: RegistrationDto): Promise<Token> {
     return this.authService.signup(dto);
+    // this.authService.signup(dto);
+    // return null;
   }
 
   // ======== signin ==========

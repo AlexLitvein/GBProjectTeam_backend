@@ -3,8 +3,8 @@ import { ProjectService } from './project.service';
 import { ProjectController } from './project.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Project, ProjectSchema } from './project.shema';
-import { StorageService } from 'storage/storage.service';
-import { Docum, DocumSchema } from 'document/document.shema';
+import { CommentService } from 'comment/comment.service';
+import { Comment, CommentSchema } from 'comment/comment.shema';
 
 @Module({
   imports: [
@@ -12,12 +12,12 @@ import { Docum, DocumSchema } from 'document/document.shema';
       [{ name: Project.name, schema: ProjectSchema }],
       'nest',
     ),
-    // MongooseModule.forFeature(
-    //   [{ name: Docum.name, schema: DocumSchema }],
-    //   'nest',
-    // ),
+    MongooseModule.forFeature(
+      [{ name: Comment.name, schema: CommentSchema }],
+      'nest',
+    ),
   ],
   controllers: [ProjectController],
-  providers: [ProjectService],
+  providers: [ProjectService, CommentService],
 })
 export class ProjectModule {}
