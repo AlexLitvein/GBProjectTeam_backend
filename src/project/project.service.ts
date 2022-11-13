@@ -114,9 +114,9 @@ export class ProjectService {
     projectId: ObjectId,
     updateProjectDto: UpdateProjectDto,
   ) {
-    updateProjectDto.coordinationUsers.forEach((el) => {
-      el.settedStatus = ProjectStatus.IN_PROGRESS;
-    });
+    // updateProjectDto.coordinationUsers.forEach((el) => {
+    //   el.settedStatus = ProjectStatus.IN_PROGRESS;
+    // });
 
     return this._findOneAndUpdate(
       { _id: projectId, ownerId: userId },

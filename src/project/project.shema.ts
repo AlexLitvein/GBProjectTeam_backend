@@ -16,8 +16,7 @@ export class CoordinationUser {
   // @IsMongoId()
   userId: ObjectId;
 
-  @ApiProperty({ enum: ProjectStatus })
-  // @IsString()
+  // @ApiProperty({ enum: ProjectStatus, required: false })
   // @IsEnum(ProjectStatus)
   settedStatus: ProjectStatus;
 }
@@ -27,6 +26,7 @@ export type ProjectDocument = Project & Document;
 @Schema({ timestamps: true })
 export class Project {
   @ApiProperty({ required: false }) // for swagger
+  @IsOptional()
   @IsString() // for validators
   @Prop({ default: '' }) // for mongoose
   name: string;
@@ -80,7 +80,7 @@ export class Project {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'User',
         },
-        settedStatus: { type: String },
+        settedStatus: { type: String, default: ProjectStatus.IN_PROGRESS },
       },
     ],
   })
