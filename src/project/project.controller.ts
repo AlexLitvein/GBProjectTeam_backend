@@ -13,7 +13,7 @@ import {
   CreateProjectDto,
   UpdateProjectDto,
   ProjectDto,
-  SetProjectStatusDto,
+  SetDocumentStatusDto,
 } from 'project/dto';
 import {
   ApiBearerAuth,
@@ -120,27 +120,22 @@ export class ProjectController {
   }
 
   // ======== addStatus ==========
-  // @ApiOperation({
-  //   description: 'Обновить проект документов',
-  // })
-  // @ApiBody({
-  //   type: UpdateProjectDto,
-  // })
-  // @ApiResponse({
-  //   status: 200,
-  //   type: [ProjectDto],
-  // })
-  // @ApiParam({
-  //   name: 'id',
-  //   description: 'id пакета документов',
-  // })
+  @ApiOperation({
+    description: 'Добавить своё "решение" по проекту',
+  })
+  @ApiBody({
+    type: SetDocumentStatusDto,
+  })
+  @ApiResponse({
+    status: 201,
+    type: [ProjectDto],
+  })
   @Post('addStatus')
   addStatus(
     @GetUser('_id') userId: ObjectId,
-    // @Param('id') projectId: ObjectId,
-    @Body() projectStatus: SetProjectStatusDto,
+    @Body() documentStatus: SetDocumentStatusDto,
   ) {
-    return this.projectService.addStatus(userId, projectStatus);
+    return this.projectService.addStatus(userId, documentStatus);
   }
 
   // ======== delete ==========

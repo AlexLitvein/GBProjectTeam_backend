@@ -80,7 +80,7 @@ export class ChatGateway implements OnGatewayConnection, OnModuleInit {
     const message = await this.commentService.create(msg);
 
     this.server
-      .to(msg.documentId as unknown as string)
+      .to(msg.projectId as unknown as string)
       .emit('receive_message', message);
 
     return message;

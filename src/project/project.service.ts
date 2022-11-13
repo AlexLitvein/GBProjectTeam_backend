@@ -1,10 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { CommentService } from 'comment/comment.service';
+import { CreateCommentDto } from 'comment/dto';
 import { Model, ObjectId } from 'mongoose';
 import {
   CreateProjectDto,
   ProjectDto,
-  SetProjectStatusDto,
+  SetDocumentStatusDto,
   UpdateProjectDto,
 } from 'project/dto';
 import { ProjectStatus } from 'types';
@@ -15,6 +17,7 @@ export class ProjectService {
   constructor(
     @InjectModel(Project.name, 'nest')
     private projectModel: Model<ProjectDocument>, // @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
+    private commentService: CommentService,
   ) {}
 
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -78,33 +81,32 @@ export class ProjectService {
     return this._find({});
   }
 
-  async addStatus(userId: ObjectId, projectStatus: SetProjectStatusDto) {
-    // findOneAndUpdate({myId: 2, 'arr.name': 'pete'}, {$set: {'arr.$.status': "new_pete_1" }})
-    // const prj = await this.projectModel.findOneAndUpdate(
-    //   {
-    //     _id: projectStatus.projectId,
-    //     'coordinationUsers.userId': userId,
-    //   },
-    //   { $set: { 'coordinationUsers.$.status': projectStatus.status } },
-    //   {
-    //     new: true,
-    //   },
-    // );
-
-    // if (prj) {
-    //   return prj;
-    // } else {
-    //   throw new ForbiddenException(
-    //     'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
-    //   );
-    // }
-    return this._findOneAndUpdate(
+  async addStatus(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
+    const prj = await this._findOneAndUpdate(
       {
-        _id: projectStatus.projectId,
+        _id: documentStatus.projectId,
         'coordinationUsers.userId': userId,
       },
-      { $set: { 'coordinationUsers.$.status': projectStatus.status } },
+      { $set: { 'coordinationUsers.$.settedStatus': documentStatus.status } },
     );
+
+    if (prj) {
+      const comment: CreateCommentDto = {
+        user: userId,
+        projectId: documentStatus.projectId,
+        message: documentStatus.message,
+        status: documentStatus.status,
+      };
+      this.commentService.create(comment);
+
+      const status = prj.coordinationUsers.reduce(
+        (acc, el) => (acc &&= el.settedStatus === ProjectStatus.APPROVED),
+        true,
+      );
+      return status && prj.set('status', ProjectStatus.APPROVED);
+    }
+
+    return prj;
   }
 
   async update(
@@ -118,7 +120,6 @@ export class ProjectService {
 
     return this._findOneAndUpdate(
       { _id: projectId, ownerId: userId },
-      // updateProjectDto,
       { ...updateProjectDto, $set: { status: ProjectStatus.IN_PROGRESS } },
     );
   }

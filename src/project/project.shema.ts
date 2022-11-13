@@ -11,37 +11,23 @@ import {
 } from 'class-validator';
 import mongoose, { Document, ObjectId } from 'mongoose';
 
-@Schema()
 export class CoordinationUser {
-  @ApiProperty({ type: mongoose.Schema.Types.ObjectId })
-  @IsMongoId()
-  @Prop({ type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } })
+  @ApiProperty({ type: 'string' })
+  // @IsMongoId()
   userId: ObjectId;
 
-  // @ApiProperty({ type: 'string' })
-  @IsEnum(ProjectStatus)
-  @Prop({ default: ProjectStatus.IN_PROGRESS })
+  @ApiProperty({ enum: ProjectStatus })
+  // @IsString()
+  // @IsEnum(ProjectStatus)
   settedStatus: ProjectStatus;
 }
-
-// export class CoordinationUser {
-//   @ApiProperty({ type: 'string' })
-//   @IsMongoId()
-//   // @Prop({ type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } })
-//   userId: ObjectId;
-
-//   @ApiProperty({ type: 'string' })
-//   @IsString()
-//   @IsEnum(ProjectStatus)
-//   settedStatus: ProjectStatus;
-// }
 
 export type ProjectDocument = Project & Document;
 
 @Schema({ timestamps: true })
 export class Project {
   @ApiProperty({ required: false }) // for swagger
-  // @IsString() // for validators
+  @IsString() // for validators
   @Prop({ default: '' }) // for mongoose
   name: string;
 
@@ -54,7 +40,6 @@ export class Project {
   @ApiProperty({ type: String })
   @IsMongoId()
   @Prop({
-    required: true,
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
@@ -82,16 +67,24 @@ export class Project {
   // })
   // coordinationUsersIds: ObjectId[];
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: [CoordinationUser] })
   @IsOptional()
-  // @IsMongoId({ each: true })
   @IsArray()
-  // @ArrayUnique()
+  @ArrayUnique()
   @Prop({
     required: false,
-    // type: [CoordinationUser],
+    type: [
+      {
+        _id: false,
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+        settedStatus: { type: String },
+      },
+    ],
   })
-  coordinationUsers: CoordinationUser[];
+  coordinationUsers: CoordinationUser[]; // CoordinationUser[];
 
   @ApiProperty({ required: false, enum: ProjectStatus })
   @IsEnum(ProjectStatus)

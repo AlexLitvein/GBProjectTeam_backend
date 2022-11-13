@@ -1,4 +1,6 @@
+import { Prop } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsMongoId, IsString } from 'class-validator';
 import mongoose, { ObjectId } from 'mongoose';
 import { ProjectStatus } from 'types';
 import { Project } from '../project.shema';
@@ -11,13 +13,16 @@ export class ProjectDto extends Project {
   updatedAt: Date;
 }
 
-export class SetProjectStatusDto {
+export class SetDocumentStatusDto {
   @ApiProperty({ type: String })
+  @IsMongoId()
   projectId: ObjectId;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ enum: ProjectStatus })
+  @IsEnum(ProjectStatus)
   status: ProjectStatus;
 
   @ApiProperty({ type: String, required: false })
+  @IsString()
   message: string;
 }

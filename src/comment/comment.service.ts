@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { CreateCommentDto, UpdateCommentDto } from 'comment/dto';
+import { CreateCommentDto } from 'comment/dto';
 import { StorageService } from 'storage/storage.service';
 import { Comment, CommentDocument, commentProxy } from './comment.shema';
 
@@ -37,7 +37,10 @@ export class CommentService {
   }
 
   async findByProject(documentId: ObjectId) {
-    return this.commentModel.find({ documentId: documentId });
+    return this.commentModel.find({ projectId: documentId }).populate({
+      path: commentProxy.user.toString(),
+      select: ['firstName', 'lastName'],
+    });
   }
 
   // findOne(id: ObjectId) {
