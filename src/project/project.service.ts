@@ -24,20 +24,22 @@ export class ProjectService {
   private async _find(filter: Object) {
     // INFO: выбрать все кроме почты
     // .populate({ path: 'coordinationUsers', select: '-email' });
-    return this.projectModel
-      .find(filter)
-      .populate({
-        path: projectProxy.coordinationUsers.toString(),
-        select: ['firstName', 'lastName'],
-      })
-      .populate({
-        path: projectProxy.documentsIds.toString(),
-        select: ['attachedFileName'],
-      })
-      .populate({
-        path: projectProxy.ownerId.toString(),
-        select: ['firstName', 'lastName'],
-      });
+    return (
+      this.projectModel
+        .find(filter)
+        // .populate({
+        //   path: `${projectProxy.coordinationUsers.toString()}.userId`,
+        //   select: ['firstName', 'lastName'],
+        // })
+        .populate({
+          path: projectProxy.documentsIds.toString(),
+          select: ['attachedFileName'],
+        })
+        .populate({
+          path: projectProxy.ownerId.toString(),
+          select: ['firstName', 'lastName'],
+        })
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
