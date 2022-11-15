@@ -40,7 +40,6 @@ import { UserService } from 'user/user.service';
   description: 'Error description string',
   type: ApiErrorDto,
 })
-@UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
   constructor(
@@ -48,34 +47,8 @@ export class UserController {
     private filesService: FilesService,
   ) {}
 
-  // ======== get self avatar ==========
-  // порядок методов имеет значение! этот дб перед readOne
-  @ApiOperation({
-    description: 'Получить аватар пользователя',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'файл аватара',
-  })
-  @Get('avatar')
-  async getAvatar(@GetUser('_id') userId: ObjectId, @Res() res) {
-    const user = await this.userService.findOne(userId);
-    if (user.avatar) {
-      const file = await this.filesService.findInfo(user.avatar);
-      const filestream = await this.filesService.readStream(user.avatar);
-      if (!filestream) {
-        throw new HttpException(
-          'An error occurred while retrieving file',
-          HttpStatus.EXPECTATION_FAILED,
-        );
-      }
-      res.header('Content-Type', file.contentType);
-      return filestream.pipe(res);
-    } else {
-    }
-  }
-
   // ======== readOne ==========
+  @UseGuards(JwtGuard)
   @ApiOperation({
     description: 'Получить пользователя по его id',
   })
@@ -93,6 +66,7 @@ export class UserController {
   }
 
   // ======== readMany ==========
+  @UseGuards(JwtGuard)
   @ApiOperation({
     description: 'Получить всех пользователей',
   })
@@ -106,6 +80,7 @@ export class UserController {
   }
 
   // ======== update ==========
+  @UseGuards(JwtGuard)
   @ApiOperation({
     description: 'Обновить данные юзера',
   })
@@ -122,6 +97,7 @@ export class UserController {
   }
 
   // ======== set avatar ==========
+  @UseGuards(JwtGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Загрузка аватара',
