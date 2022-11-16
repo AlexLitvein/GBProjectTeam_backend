@@ -13,11 +13,11 @@ import mongoose, { Document, ObjectId } from 'mongoose';
 
 export class CoordinationUser {
   @ApiProperty({ type: 'string' })
-  // @IsMongoId()
+  @IsMongoId()
   userId: ObjectId;
 
-  // @ApiProperty({ enum: ProjectStatus, required: false })
-  // @IsEnum(ProjectStatus)
+  @ApiProperty({ enum: ProjectStatus, required: false })
+  @IsEnum(ProjectStatus)
   settedStatus: ProjectStatus;
 }
 
