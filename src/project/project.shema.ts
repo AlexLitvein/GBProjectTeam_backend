@@ -1,9 +1,11 @@
-import { ProjectStatus } from 'types';
+import { ProjectStatus, UserDecision } from 'types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayUnique,
   IsArray,
+  IsDate,
+  IsDateString,
   IsEnum,
   IsMongoId,
   IsOptional,
@@ -16,9 +18,9 @@ export class CoordinationUser {
   @IsMongoId()
   userId: ObjectId;
 
-  @ApiProperty({ enum: ProjectStatus, required: false })
-  @IsEnum(ProjectStatus)
-  settedStatus: ProjectStatus;
+  @ApiProperty({ enum: UserDecision, required: false })
+  @IsEnum(UserDecision)
+  settedStatus: UserDecision;
 }
 
 export type ProjectDocument = Project & Document;
@@ -44,6 +46,16 @@ export class Project {
     ref: 'User',
   })
   ownerId: ObjectId;
+
+  @ApiProperty({
+    required: false,
+    type: Date,
+    example: '2022-11-16T03:53:50.278Z или 2022-11-16 дефисы обязательны',
+  })
+  @IsOptional()
+  @IsDateString()
+  @Prop({ default: Date.now() })
+  deadline: Date;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -80,7 +92,7 @@ export class Project {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'User',
         },
-        settedStatus: { type: String, default: ProjectStatus.IN_PROGRESS },
+        settedStatus: { type: String, default: UserDecision.NONE },
       },
     ],
   })
