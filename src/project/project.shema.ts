@@ -16,7 +16,7 @@ export class CoordinationUser {
   @IsMongoId()
   userId: ObjectId;
 
-  //INFO:  скрыл от фронта @ApiProperty({ enum: ProjectStatus, required: false })
+  @ApiProperty({ enum: ProjectStatus, required: false })
   @IsEnum(ProjectStatus)
   settedStatus: ProjectStatus;
 }
