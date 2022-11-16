@@ -4,9 +4,15 @@ export enum ProjectStatus {
   IN_PROGRESS = 'К рассмотрению',
   APPROVED = 'Согласовано',
   NOT_APPROVED = 'Отклонено',
-  // ARCHIVED = 'В архиве',
-  // FREEZED = 'Заморожено',
+  ARCHIVED = 'В архиве',
+  FREEZED = 'Заморожено',
   DRAFT = 'Черновик',
+}
+
+export enum UserDecision {
+  APPROVED = 'Согласовано',
+  NOT_APPROVED = 'Отклонено',
+  NONE = '',
 }
 
 // export enum DocumentStatus {
@@ -20,6 +26,7 @@ export enum ProjectStatus {
 
 export const Enums = {
   ProjectStatus,
+  UserDecision,
   // DocumentStatus,
 };
 

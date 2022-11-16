@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UploadedFiles,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto, CommentDto } from 'comment/dto';
 import {
@@ -21,9 +11,6 @@ import {
 } from '@nestjs/swagger';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
-// import { FilesInterceptor } from '@nestjs/platform-express';
-// import { UploadFilesResultDto } from 'storage/dto/upload.dto';
-// import { type } from 'os';
 
 @ApiExtraModels(CommentDto, ApiErrorDto)
 @ApiTags('comments')

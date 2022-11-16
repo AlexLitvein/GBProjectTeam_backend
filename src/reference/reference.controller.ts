@@ -11,7 +11,7 @@ export class ReferenceController {
     description: 'имя перечисления',
     schema: {
       type: 'string',
-      enum: ['ProjectStatus', 'DocumentStatus'],
+      enum: ['ProjectStatus', 'UserDecision'],
     },
   })
   @ApiResponse({

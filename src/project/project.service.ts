@@ -9,7 +9,7 @@ import {
   SetDocumentStatusDto,
   UpdateProjectDto,
 } from 'project/dto';
-import { ProjectStatus } from 'types';
+import { ProjectStatus, UserDecision } from 'types';
 import { Project, ProjectDocument, projectProxy } from './project.shema';
 
 @Injectable()
@@ -71,7 +71,7 @@ export class ProjectService {
   // INFO: {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
   findAllWhereUser(id: ObjectId) {
     return this._find({
-      // $or: [{ ownerId: id }, { coordinationUsersIds: id }],
+      status: { $ne: ProjectStatus.DRAFT },
       $or: [
         { ownerId: id },
         { [`${projectProxy.coordinationUsers}.userId`]: id },
@@ -102,7 +102,7 @@ export class ProjectService {
       this.commentService.create(comment);
 
       const status = prj.coordinationUsers.reduce(
-        (acc, el) => (acc &&= el.settedStatus === ProjectStatus.APPROVED),
+        (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
         true,
       );
       return status && prj.set('status', ProjectStatus.APPROVED);
@@ -116,13 +116,10 @@ export class ProjectService {
     projectId: ObjectId,
     updateProjectDto: UpdateProjectDto,
   ) {
-    // updateProjectDto.coordinationUsers.forEach((el) => {
-    //   el.settedStatus = ProjectStatus.IN_PROGRESS;
-    // });
-
     return this._findOneAndUpdate(
       { _id: projectId, ownerId: userId },
-      { ...updateProjectDto, $set: { status: ProjectStatus.IN_PROGRESS } },
+      // { ...updateProjectDto, $set: { status: ProjectStatus.IN_PROGRESS } },
+      updateProjectDto,
     );
   }
 
