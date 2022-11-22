@@ -113,6 +113,17 @@ export class ProjectService {
         ...{ $gt: filter.updatedAfter },
         ...{ $lte: filter.updatedBefore },
       };
+
+    if (filter.deadlineAfter && !filter.deadlineBefore)
+      criteria.deadline = { $gte: filter.deadlineAfter };
+    if (filter.deadlineBefore && !filter.deadlineAfter)
+      criteria.deadline = { $lte: filter.deadlineBefore };
+
+    if (filter.deadlineAfter && filter.deadlineBefore)
+      criteria.deadline = {
+        ...{ $gte: filter.deadlineAfter },
+        ...{ $lte: filter.deadlineBefore },
+      };
     return this._find(criteria);
   }
 

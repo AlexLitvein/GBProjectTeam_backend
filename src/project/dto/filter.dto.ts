@@ -15,5 +15,9 @@ export class FilterProjectDto {
   @ApiProperty({ required: false })
   updatedBefore?: Date;
   @ApiProperty({ required: false })
+  deadlineAfter?: Date;
+  @ApiProperty({ required: false })
+  deadlineBefore?: Date;
+  @ApiProperty({ required: false })
   status?: ProjectStatus;
 }
