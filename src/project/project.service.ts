@@ -99,8 +99,8 @@ export class ProjectService {
 
     if (filter.createdAfter && filter.createdBefore)
       criteria.createdAt = {
-        ...{ $gt: filter.createdAfter },
-        ...{ $lte: filter.createdBefore },
+        $gt: filter.createdAfter,
+        $lte: filter.createdBefore,
       };
 
     if (filter.updatedAfter && !filter.updatedBefore)
@@ -110,8 +110,8 @@ export class ProjectService {
 
     if (filter.updatedAfter && filter.updatedBefore)
       criteria.updatedAt = {
-        ...{ $gt: filter.updatedAfter },
-        ...{ $lte: filter.updatedBefore },
+        $gt: filter.updatedAfter,
+        $lte: filter.updatedBefore,
       };
 
     if (filter.deadlineAfter && !filter.deadlineBefore)
@@ -121,8 +121,8 @@ export class ProjectService {
 
     if (filter.deadlineAfter && filter.deadlineBefore)
       criteria.deadline = {
-        ...{ $gte: filter.deadlineAfter },
-        ...{ $lte: filter.deadlineBefore },
+        $gte: filter.deadlineAfter,
+        $lte: filter.deadlineBefore,
       };
     return this._find(criteria);
   }
