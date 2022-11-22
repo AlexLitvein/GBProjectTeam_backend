@@ -1,23 +1,42 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ProjectStatus } from 'types';
 
 export class FilterProjectDto {
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: String, required: false })
+  @IsString()
+  @IsOptional()
   name?: string;
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: String, required: false })
+  @IsString()
+  @IsOptional()
   description?: string;
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: Date, required: false })
+  @IsDateString()
+  @IsOptional()
   createdAfter?: Date;
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: Date, required: false })
+  @IsDateString()
+  @IsOptional()
   createdBefore?: Date;
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: Date, required: false })
+  @IsDateString()
+  @IsOptional()
   updatedAfter?: Date;
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: Date, required: false })
+  @IsDateString()
+  @IsOptional()
   updatedBefore?: Date;
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: Date, required: false })
+  @IsDateString()
+  @IsOptional()
   deadlineAfter?: Date;
-  @ApiProperty({ required: false })
+  @ApiProperty({ type: Date, required: false })
+  @IsDateString()
+  @IsOptional()
   deadlineBefore?: Date;
-  @ApiProperty({ required: false })
+  @ApiProperty({ enum: ProjectStatus, required: false })
+  @IsEnum(ProjectStatus)
+  @IsOptional()
   status?: ProjectStatus;
 }
