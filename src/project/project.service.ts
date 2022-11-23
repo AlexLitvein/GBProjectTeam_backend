@@ -90,7 +90,7 @@ export class ProjectService {
     if (filter.name) criteria.name = { $regex: filter.name, $options: 'i' };
     if (filter.description)
       criteria.description = { $regex: filter.description, $options: 'i' };
-    if (filter.status) criteria.status = filter.status;
+    if (filter.status) criteria.status = { $in: [].concat(filter.status) };
 
     if (filter.createdAfter && !filter.createdBefore)
       criteria.createdAt = { $gt: filter.createdAfter };
@@ -124,6 +124,7 @@ export class ProjectService {
         $gte: filter.deadlineAfter,
         $lte: filter.deadlineBefore,
       };
+    console.log('criteria', criteria);
     return this._find(criteria);
   }
 

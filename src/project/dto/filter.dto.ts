@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  ArrayContains,
+  ArrayMinSize,
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ProjectStatus } from 'types';
 
 export class FilterProjectDto {
@@ -35,8 +43,17 @@ export class FilterProjectDto {
   @IsDateString()
   @IsOptional()
   deadlineBefore?: Date;
-  @ApiProperty({ enum: ProjectStatus, required: false })
-  @IsEnum(ProjectStatus)
+  @ApiProperty({
+    type: [String],
+    enum: ProjectStatus,
+    required: false,
+    description: 'Запрос вида filter?status=val1&status=val2',
+  })
+  // @ApiProperty({ type: [String], required: false })
+  // @IsEnum(ProjectStatus)
+  // @IsArray()
+  // @ArrayMinSize(0)
+  // @ArrayContains(values: ProjectStatus)
   @IsOptional()
-  status?: ProjectStatus;
+  status?: ProjectStatus[];
 }
