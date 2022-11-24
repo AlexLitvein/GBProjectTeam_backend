@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Enums } from 'types';
+import { ProjectStatus, ProjectStatusKeys } from 'types';
 
 @ApiTags('Справочник')
 @Controller('reference')
@@ -21,6 +21,13 @@ export class ReferenceController {
   })
   @Get('enums/:name')
   async getEnums(@Param('name') name: string) {
-    return Enums[name];
+    const out: Partial<Record<ProjectStatusKeys, ProjectStatus>> = {
+      APPROVED: ProjectStatus.APPROVED,
+      NOT_APPROVED: ProjectStatus.NOT_APPROVED,
+    };
+    if (name === 'ProjectStatus') {
+      out.FREEZED = ProjectStatus.FREEZED;
+    }
+    return out;
   }
 }

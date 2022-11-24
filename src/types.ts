@@ -9,6 +9,12 @@ export enum ProjectStatus {
   DRAFT = 'Черновик',
 }
 
+type PickKey<T, K extends keyof T> = Extract<keyof T, K>;
+export type ProjectStatusKeys = PickKey<
+  typeof ProjectStatus,
+  'APPROVED' | 'NOT_APPROVED' | 'FREEZED'
+>;
+
 export enum UserDecision {
   APPROVED = 'Согласовано',
   NOT_APPROVED = 'Отклонено',

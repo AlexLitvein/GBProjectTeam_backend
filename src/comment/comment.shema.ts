@@ -14,7 +14,7 @@ export class Comment {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   })
-  user: ObjectId;
+  userId: ObjectId;
 
   @ApiProperty({ type: 'string' })
   @IsMongoId()
