@@ -9,6 +9,7 @@ import {
   SetDocumentStatusDto,
   UpdateProjectDto,
 } from 'project/dto';
+import { ProjectStatus } from 'types';
 import { findDiff } from 'utils';
 import {
   CoordinationUser,
@@ -71,15 +72,15 @@ export class ProjectService {
   }
 
   // INFO: {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
-  // findAllWhereUser(id: ObjectId) {
-  //   return this._find({
-  //     status: { $ne: ProjectStatus.DRAFT },
-  //     $or: [
-  //       { ownerId: id },
-  //       { [`${projectProxy.coordinationUsers}.userId`]: id },
-  //     ],
-  //   });
-  // }
+  findAllWhereUser(id: ObjectId) {
+    return this._find({
+      status: { $ne: ProjectStatus.DRAFT },
+      $or: [
+        { ownerId: id },
+        { [`${projectProxy.coordinationUsers}.userId`]: id },
+      ],
+    });
+  }
 
   findFilter(id: ObjectId, filter: FilterProjectDto) {
     const criteria: { [k: string]: any } = {};
