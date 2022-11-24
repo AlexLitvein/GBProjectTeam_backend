@@ -64,6 +64,21 @@ export class ProjectController {
     return this.projectService.create(createProjectDto, userId);
   }
 
+  // ======== getMany ==========
+  @ApiOperation({
+    description:
+      'Получить все проекты документов связанные с авторизованным польователем',
+  })
+  @ApiResponse({
+    status: 200,
+    type: [ProjectDto],
+  })
+  @Get()
+  getMany(@GetUser('_id') userId: ObjectId) {
+    // return this.projectService.findAll();
+    return this.projectService.findAllWhereUser(userId);
+  }
+
   // ======== filter getMany ==========
   @ApiOperation({
     description:
@@ -98,20 +113,6 @@ export class ProjectController {
   getOne(@Param('id') id: ObjectId) {
     return this.projectService.findOne(id);
   }
-
-  // ======== getMany ==========
-  // @ApiOperation({
-  //   description:
-  //     'Получить все проекты документов связанные с авторизованным польователем',
-  // })
-  // @ApiResponse({
-  //   status: 200,
-  //   type: [ProjectDto],
-  // })
-  // @Get()
-  // getMany(@GetUser('_id') userId: ObjectId) {
-  //   return this.projectService.findAllWhereUser(userId);
-  // }
 
   // ======== update ==========
   @ApiOperation({

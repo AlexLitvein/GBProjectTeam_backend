@@ -1,7 +1,6 @@
-import { Prop } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsMongoId, IsString } from 'class-validator';
-import mongoose, { ObjectId } from 'mongoose';
+import { ObjectId } from 'mongoose';
 import { ProjectStatus } from 'types';
 import { Project } from '../project.shema';
 

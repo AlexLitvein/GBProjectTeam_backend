@@ -4,7 +4,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayUnique,
   IsArray,
-  IsDate,
   IsDateString,
   IsEnum,
   IsMongoId,
@@ -67,17 +66,6 @@ export class Project {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Docum' }],
   })
   documentsIds: ObjectId[];
-
-  // @ApiProperty({ required: false })
-  // @IsOptional()
-  // @IsMongoId({ each: true })
-  // @IsArray()
-  // @ArrayUnique()
-  // @Prop({
-  //   required: false,
-  //   type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  // })
-  // coordinationUsersIds: ObjectId[];
 
   @ApiProperty({ required: false, type: [CoordinationUser] })
   @IsOptional()
