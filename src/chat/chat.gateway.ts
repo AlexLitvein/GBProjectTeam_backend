@@ -77,12 +77,13 @@ export class ChatGateway implements OnGatewayConnection, OnModuleInit {
     @MessageBody() msg: CreateCommentDto,
     @ConnectedSocket() socket: Socket,
   ) {
-    const message = await this.commentService.create(msg);
+    // const message = await this.commentService.create(msg);
 
-    this.server
-      .to(msg.projectId as unknown as string)
-      .emit('receive_message', message);
+    // this.server
+    //   .to(msg.projectId as unknown as string)
+    //   .emit('receive_message', message);
 
-    return message;
+    // return message;
+    return 0;
   }
 }

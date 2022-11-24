@@ -100,19 +100,18 @@ export class ProjectController {
   }
 
   // ======== getMany ==========
-  @ApiOperation({
-    description:
-      'Получить все проекты документов связанные с авторизованным польователем',
-  })
-  @ApiResponse({
-    status: 200,
-    type: [ProjectDto],
-  })
-  @Get()
-  getMany(@GetUser('_id') userId: ObjectId) {
-    // return this.projectService.findAll();
-    return this.projectService.findAllWhereUser(userId);
-  }
+  // @ApiOperation({
+  //   description:
+  //     'Получить все проекты документов связанные с авторизованным польователем',
+  // })
+  // @ApiResponse({
+  //   status: 200,
+  //   type: [ProjectDto],
+  // })
+  // @Get()
+  // getMany(@GetUser('_id') userId: ObjectId) {
+  //   return this.projectService.findAllWhereUser(userId);
+  // }
 
   // ======== update ==========
   @ApiOperation({
@@ -141,9 +140,9 @@ export class ProjectController {
     return this.projectService.update(userId, projectId, updateProjectDto);
   }
 
-  // ======== addStatus ==========
+  // ======== changeStatus ==========
   @ApiOperation({
-    description: 'Добавить своё "решение" по проекту',
+    description: 'Изменить статус проекта (только для владельца)',
   })
   @ApiBody({
     type: SetDocumentStatusDto,
@@ -152,12 +151,31 @@ export class ProjectController {
     status: 201,
     type: [ProjectDto],
   })
-  @Post('addStatus')
-  addStatus(
+  @Post('changeStatus')
+  changeStatus(
     @GetUser('_id') userId: ObjectId,
     @Body() documentStatus: SetDocumentStatusDto,
   ) {
-    return this.projectService.addStatus(userId, documentStatus);
+    return this.projectService.changeStatus(userId, documentStatus);
+  }
+
+  // ======== addDecision ==========
+  @ApiOperation({
+    description: 'Добавить своё "решение" по проекту (только для участников)',
+  })
+  @ApiBody({
+    type: SetDocumentStatusDto,
+  })
+  @ApiResponse({
+    status: 201,
+    type: [ProjectDto],
+  })
+  @Post('addDecision')
+  addDecision(
+    @GetUser('_id') userId: ObjectId,
+    @Body() documentStatus: SetDocumentStatusDto,
+  ) {
+    return this.projectService.addDecision(userId, documentStatus);
   }
 
   // ======== delete ==========

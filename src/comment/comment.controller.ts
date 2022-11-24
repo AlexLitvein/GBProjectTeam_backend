@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto, CommentDto } from 'comment/dto';
 import {
@@ -11,6 +11,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
+import { JwtGuard } from 'auth/guard';
+import { GetUser } from 'auth/decorator';
 
 @ApiExtraModels(CommentDto, ApiErrorDto)
 @ApiTags('comments')
@@ -19,11 +21,12 @@ import { ObjectId } from 'mongoose';
   description: 'Error description string',
   type: ApiErrorDto,
 })
+@UseGuards(JwtGuard)
 @Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  // ======== create ==========
+  //======== create ==========
   // @ApiOperation({
   //   description: 'Создание комментария',
   // })
@@ -35,9 +38,12 @@ export class CommentController {
   //   description: 'Successfully created',
   //   type: CommentDto,
   // })
-  // @Post()
-  // create(@Body() createCommentDto: CreateCommentDto) {
-  //   return this.commentService.create(createCommentDto);
+  // @Post('create')
+  // create(
+  //   @GetUser('_id') userId: ObjectId,
+  //   @Body() createCommentDto: CreateCommentDto,
+  // ) {
+  //   return this.commentService.create(userId, createCommentDto);
   // }
 
   // ======== getByProject ==========

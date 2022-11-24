@@ -6,12 +6,16 @@ import { Model, ObjectId } from 'mongoose';
 import {
   CreateProjectDto,
   FilterProjectDto,
-  ProjectDto,
   SetDocumentStatusDto,
   UpdateProjectDto,
 } from 'project/dto';
-import { ProjectStatus, UserDecision } from 'types';
-import { Project, ProjectDocument, projectProxy } from './project.shema';
+import { findDiff } from 'utils';
+import {
+  CoordinationUser,
+  Project,
+  ProjectDocument,
+  projectProxy,
+} from './project.shema';
 
 @Injectable()
 export class ProjectService {
@@ -25,22 +29,20 @@ export class ProjectService {
   private async _find(filter: Object) {
     // INFO: выбрать все кроме почты
     // .populate({ path: 'coordinationUsers', select: '-email' });
-    return (
-      this.projectModel
-        .find(filter)
-        // .populate({
-        //   path: `${projectProxy.coordinationUsers.toString()}.userId`,
-        //   select: ['firstName', 'lastName'],
-        // })
-        .populate({
-          path: projectProxy.documentsIds.toString(),
-          select: ['attachedFileName'],
-        })
-        .populate({
-          path: projectProxy.ownerId.toString(),
-          select: ['firstName', 'lastName'],
-        })
-    );
+    return this.projectModel
+      .find(filter)
+      .populate({
+        path: `${projectProxy.coordinationUsers.toString()}.userId`,
+        select: ['firstName', 'lastName'],
+      })
+      .populate({
+        path: projectProxy.documentsIds.toString(),
+        select: ['attachedFileName'],
+      })
+      .populate({
+        path: projectProxy.ownerId.toString(),
+        select: ['firstName', 'lastName'],
+      });
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -53,7 +55,7 @@ export class ProjectService {
       return prj;
     } else {
       throw new ForbiddenException(
-        'Вы не можете оперировать данным проектом, так как не являетесь его владельцем',
+        'Вы не можете оперировать данным проектом, так как не являетесь его владельцем или участником',
       );
     }
   }
@@ -61,7 +63,6 @@ export class ProjectService {
   async create(createProjectDto: CreateProjectDto, ownerId: ObjectId) {
     const project = new this.projectModel(createProjectDto);
     project.ownerId = ownerId;
-    // project.status = ProjectStatus.DRAFT; // выставляется по умолчанию в project.shema
     return await project.save();
   }
 
@@ -70,15 +71,15 @@ export class ProjectService {
   }
 
   // INFO: {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
-  findAllWhereUser(id: ObjectId) {
-    return this._find({
-      status: { $ne: ProjectStatus.DRAFT },
-      $or: [
-        { ownerId: id },
-        { [`${projectProxy.coordinationUsers}.userId`]: id },
-      ],
-    });
-  }
+  // findAllWhereUser(id: ObjectId) {
+  //   return this._find({
+  //     status: { $ne: ProjectStatus.DRAFT },
+  //     $or: [
+  //       { ownerId: id },
+  //       { [`${projectProxy.coordinationUsers}.userId`]: id },
+  //     ],
+  //   });
+  // }
 
   findFilter(id: ObjectId, filter: FilterProjectDto) {
     const criteria: { [k: string]: any } = {};
@@ -132,29 +133,55 @@ export class ProjectService {
     return this._find({});
   }
 
-  async addStatus(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
+  async changeStatus(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
     const prj = await this._findOneAndUpdate(
       {
         _id: documentStatus.projectId,
-        'coordinationUsers.userId': userId,
+        ownerId: userId,
+      },
+      { $set: { status: documentStatus.status } },
+    );
+
+    if (prj) {
+      const comment: CreateCommentDto = {
+        projectId: documentStatus.projectId,
+        message: documentStatus.message,
+        status: documentStatus.status,
+      };
+      this.commentService.create(userId, comment);
+
+      // const status = prj.coordinationUsers.reduce(
+      //   (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
+      //   true,
+      // );
+      // return status && prj.set('status', ProjectStatus.APPROVED);
+    }
+
+    return prj;
+  }
+
+  async addDecision(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
+    const prj = await this._findOneAndUpdate(
+      {
+        _id: documentStatus.projectId,
+        ['coordinationUsers.userId']: userId,
       },
       { $set: { 'coordinationUsers.$.settedStatus': documentStatus.status } },
     );
 
     if (prj) {
       const comment: CreateCommentDto = {
-        user: userId,
         projectId: documentStatus.projectId,
         message: documentStatus.message,
         status: documentStatus.status,
       };
-      this.commentService.create(comment);
+      this.commentService.create(userId, comment);
 
-      const status = prj.coordinationUsers.reduce(
-        (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
-        true,
-      );
-      return status && prj.set('status', ProjectStatus.APPROVED);
+      // const status = prj.coordinationUsers.reduce(
+      //   (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
+      //   true,
+      // );
+      // return status && prj.set('status', ProjectStatus.APPROVED);
     }
 
     return prj;
@@ -165,9 +192,26 @@ export class ProjectService {
     projectId: ObjectId,
     updateProjectDto: UpdateProjectDto,
   ) {
+    const prj = await this.projectModel.findOne({
+      _id: projectId,
+      ownerId: userId,
+    });
+
+    const users = prj.coordinationUsers;
+    if (users.length) {
+      const diffUsers: CoordinationUser[] = findDiff(
+        users,
+        updateProjectDto.coordinationUsers,
+        (a: CoordinationUser, b: CoordinationUser) =>
+          JSON.stringify(a.userId) === JSON.stringify(b.userId),
+      );
+
+      diffUsers.length &&
+        this.commentService.delMany(diffUsers.map((el) => el.userId));
+    }
+
     return this._findOneAndUpdate(
       { _id: projectId, ownerId: userId },
-      // { ...updateProjectDto, $set: { status: ProjectStatus.IN_PROGRESS } },
       updateProjectDto,
     );
   }

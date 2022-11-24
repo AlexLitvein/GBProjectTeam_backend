@@ -11,15 +11,20 @@ export class CommentService {
     private commentModel: Model<CommentDocument>,
   ) {}
 
-  async create(createCommentDto: CreateCommentDto) {
+  async create(userId: ObjectId, createCommentDto: CreateCommentDto) {
     const comment = new this.commentModel(createCommentDto);
+    comment.userId = userId;
     return await comment.save();
   }
 
-  async findByProject(documentId: ObjectId) {
-    return this.commentModel.find({ projectId: documentId }).populate({
-      path: commentProxy.user.toString(),
+  async findByProject(projectId: ObjectId) {
+    return this.commentModel.find({ projectId: projectId }).populate({
+      path: commentProxy.userId.toString(),
       select: ['firstName', 'lastName'],
     });
+  }
+
+  async delMany(userIds: ObjectId[]) {
+    return this.commentModel.deleteMany({ userId: userIds });
   }
 }
