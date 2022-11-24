@@ -5,6 +5,7 @@ import { CreateCommentDto } from 'comment/dto';
 import { Model, ObjectId } from 'mongoose';
 import {
   CreateProjectDto,
+  FilterProjectDto,
   ProjectDto,
   SetDocumentStatusDto,
   UpdateProjectDto,
@@ -77,6 +78,54 @@ export class ProjectService {
         { [`${projectProxy.coordinationUsers}.userId`]: id },
       ],
     });
+  }
+
+  findFilter(id: ObjectId, filter: FilterProjectDto) {
+    const criteria: { [k: string]: any } = {};
+    criteria.$or = [
+      { ownerId: id },
+      { [`${projectProxy.coordinationUsers}.userId`]: id },
+    ];
+
+    if (filter.name) criteria.name = { $regex: filter.name, $options: 'i' };
+    if (filter.description)
+      criteria.description = { $regex: filter.description, $options: 'i' };
+    if (filter.status) criteria.status = { $in: [].concat(filter.status) };
+
+    if (filter.createdAfter && !filter.createdBefore)
+      criteria.createdAt = { $gt: filter.createdAfter };
+    if (filter.createdBefore && !filter.createdAfter)
+      criteria.createdAt = { $lte: filter.createdBefore };
+
+    if (filter.createdAfter && filter.createdBefore)
+      criteria.createdAt = {
+        $gt: filter.createdAfter,
+        $lte: filter.createdBefore,
+      };
+
+    if (filter.updatedAfter && !filter.updatedBefore)
+      criteria.updatedAt = { $gt: filter.updatedAfter };
+    if (filter.updatedBefore && !filter.updatedAfter)
+      criteria.updatedAt = { $lte: filter.updatedBefore };
+
+    if (filter.updatedAfter && filter.updatedBefore)
+      criteria.updatedAt = {
+        $gt: filter.updatedAfter,
+        $lte: filter.updatedBefore,
+      };
+
+    if (filter.deadlineAfter && !filter.deadlineBefore)
+      criteria.deadline = { $gte: filter.deadlineAfter };
+    if (filter.deadlineBefore && !filter.deadlineAfter)
+      criteria.deadline = { $lte: filter.deadlineBefore };
+
+    if (filter.deadlineAfter && filter.deadlineBefore)
+      criteria.deadline = {
+        $gte: filter.deadlineAfter,
+        $lte: filter.deadlineBefore,
+      };
+    console.log('criteria', criteria);
+    return this._find(criteria);
   }
 
   async findAll() {

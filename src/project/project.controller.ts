@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import {
@@ -14,6 +16,7 @@ import {
   UpdateProjectDto,
   ProjectDto,
   SetDocumentStatusDto,
+  FilterProjectDto,
 } from 'project/dto';
 import {
   ApiBearerAuth,
@@ -28,6 +31,7 @@ import { ApiErrorDto } from 'error/dto/apiError.dto';
 import { ObjectId } from 'mongoose';
 import { JwtGuard } from 'auth/guard';
 import { GetUser } from 'auth/decorator';
+import { Request } from 'express';
 
 @ApiExtraModels(ProjectDto, ApiErrorDto)
 @ApiTags('projects')
@@ -58,6 +62,24 @@ export class ProjectController {
     @Body() createProjectDto: CreateProjectDto,
   ) {
     return this.projectService.create(createProjectDto, userId);
+  }
+
+  // ======== filter getMany ==========
+  @ApiOperation({
+    description:
+      'Получить все проекты документов связанные с авторизованным польователем с фильтром ',
+  })
+  @ApiResponse({
+    status: 200,
+    type: [ProjectDto],
+  })
+  @Get('filter')
+  async getManyFilter(
+    @GetUser('_id') userId: ObjectId,
+    @Query() query: FilterProjectDto,
+    @Req() request: Request,
+  ) {
+    return this.projectService.findFilter(userId, request.query);
   }
 
   // ======== getOne ==========
