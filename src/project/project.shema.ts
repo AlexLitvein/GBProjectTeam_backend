@@ -89,7 +89,7 @@ export class Project {
   @ApiProperty({ required: false, enum: ProjectStatus })
   @IsEnum(ProjectStatus)
   @IsOptional()
-  @Prop({ default: ProjectStatus.DRAFT })
+  @Prop({ default: ProjectStatus.IN_PROGRESS })
   status: ProjectStatus;
 
   @Prop({ select: false })
