@@ -50,9 +50,11 @@ export class ProjectService {
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   private async _findOneAndUpdate(filter: Object, update: Object) {
-    const prj = await this.projectModel.findOneAndUpdate(filter, update, {
-      new: true,
-    });
+    const prj = await this.projectModel
+      .findOneAndUpdate(filter, update, {
+        new: true,
+      })
+      .set({ status: ProjectStatus.IN_PROGRESS });
 
     if (prj) {
       return prj;

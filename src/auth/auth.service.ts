@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { AuthDto, Token } from 'auth/dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { User, UserDocument } from 'user/user.shema';
 
 @Injectable({})
@@ -22,6 +22,8 @@ export class AuthService {
       ...data,
       hash,
     });
+    // '6380a33212c067fd9cfefe9e' remote avatar
+    user.avatar = '6380a33212c067fd9cfefe9e' as never as ObjectId;
 
     try {
       await user.save();
