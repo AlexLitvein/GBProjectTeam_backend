@@ -26,11 +26,11 @@ export class GridFsMulterConfigService implements MulterOptionsFactory {
   createMulterOptions(): MulterModuleOptions {
     return {
       fileFilter(req, file, cb) {
-        if (!/(pdf|doc|jpeg|png)/.test(file.mimetype)) {
+        if (!/(pdf|doc|jpeg|png|svf)/.test(file.mimetype)) {
           // Чтобы отклонить, прокиньте в аргументы `false` так: cb(null, false);
           cb(
             new BadRequestException(
-              `Недопустимый тип файла ${file.originalname}, требуется (pdf,doc,jpg,png)`,
+              `Недопустимый тип файла ${file.originalname}, требуется (pdf,doc,jpg,png,svg)`,
             ),
             false,
           );
