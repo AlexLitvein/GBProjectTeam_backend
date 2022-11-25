@@ -22,7 +22,7 @@ export class AuthService {
       ...data,
       hash,
     });
-
+  user.avatar = '6380a33212c067fd9cfefe9e' as never as ObjectId;
     try {
       await user.save();
       return this.signToken(user.id, user.email);
