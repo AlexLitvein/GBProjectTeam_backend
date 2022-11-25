@@ -5,4 +5,5 @@ export class CreateProjectDto extends OmitType(ProjectDto, [
   'createdAt',
   'updatedAt',
   'ownerId',
+  'status',
 ] as const) {}

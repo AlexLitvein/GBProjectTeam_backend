@@ -14,13 +14,13 @@ import { ObjectId } from 'mongoose';
 import { JwtGuard } from 'auth/guard';
 import { GetUser } from 'auth/decorator';
 
-@ApiExtraModels(CommentDto, ApiErrorDto)
-@ApiTags('comments')
-@ApiResponse({
-  status: 400,
-  description: 'Error description string',
-  type: ApiErrorDto,
-})
+// @ApiExtraModels(CommentDto, ApiErrorDto)
+// @ApiTags('comments')
+// @ApiResponse({
+//   status: 400,
+//   description: 'Error description string',
+//   type: ApiErrorDto,
+// })
 @UseGuards(JwtGuard)
 @Controller('comments')
 export class CommentController {

@@ -18,6 +18,6 @@ import { Comment, CommentSchema } from 'comment/comment.shema';
     ),
   ],
   controllers: [ProjectController],
-  providers: [ProjectService, CommentService],
+  providers: [ProjectService], // CommentService
 })
 export class ProjectModule {}
