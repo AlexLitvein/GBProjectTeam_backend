@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export enum ProjectStatus {
-  IN_PROGRESS = 'К рассмотрению',
+  IN_PROGRESS = 'К согласованию',
   APPROVED = 'Согласовано',
   NOT_APPROVED = 'Отклонено',
   ARCHIVED = 'В архиве',
@@ -12,7 +12,7 @@ export enum ProjectStatus {
 type PickKey<T, K extends keyof T> = Extract<keyof T, K>;
 export type ProjectStatusKeys = PickKey<
   typeof ProjectStatus,
-  'APPROVED' | 'NOT_APPROVED' | 'FREEZED'
+  'APPROVED' | 'NOT_APPROVED' | 'IN_PROGRESS' | 'FREEZED'
 >;
 
 export enum UserDecision {

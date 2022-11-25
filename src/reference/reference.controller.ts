@@ -27,6 +27,7 @@ export class ReferenceController {
     };
     if (name === 'ProjectStatus') {
       out.FREEZED = ProjectStatus.FREEZED;
+      out.IN_PROGRESS = ProjectStatus.IN_PROGRESS;
     }
     return out;
   }

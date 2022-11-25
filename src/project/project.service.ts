@@ -22,9 +22,11 @@ import {
 export class ProjectService {
   constructor(
     @InjectModel(Project.name, 'nest')
-    private projectModel: Model<ProjectDocument>, // @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
-    private commentService: CommentService,
+    private projectModel: Model<ProjectDocument>,
   ) {}
+
+  // @InjectModel(Docum.name, 'nest') private documModel: Model<DocumDocument>,
+  // private commentService: CommentService,
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   private async _find(filter: Object) {
@@ -56,7 +58,7 @@ export class ProjectService {
       return prj;
     } else {
       throw new ForbiddenException(
-        'Вы не можете оперировать данным проектом, так как не являетесь его владельцем или участником',
+        'Вы не можете оперировать данным проектом, так как не являетесь его участником или владельцем',
       );
     }
   }
@@ -135,57 +137,92 @@ export class ProjectService {
   }
 
   async changeStatus(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
-    const prj = await this._findOneAndUpdate(
-      {
-        _id: documentStatus.projectId,
-        ownerId: userId,
-      },
-      { $set: { status: documentStatus.status } },
-    );
+    if (documentStatus.status === ProjectStatus.APPROVED) {
+      const prj = await this.projectModel.findOneAndUpdate(
+        {
+          _id: documentStatus.projectId,
+          ownerId: userId,
+          'coordinationUsers.settedStatus': { $all: [ProjectStatus.APPROVED] },
+        },
+        { $set: { status: documentStatus.status } },
+        { new: true },
+      );
 
-    if (prj) {
-      const comment: CreateCommentDto = {
-        projectId: documentStatus.projectId,
-        message: documentStatus.message,
-        status: documentStatus.status,
-      };
-      this.commentService.create(userId, comment);
-
-      // const status = prj.coordinationUsers.reduce(
-      //   (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
-      //   true,
-      // );
-      // return status && prj.set('status', ProjectStatus.APPROVED);
+      if (prj) {
+        return prj;
+      } else {
+        throw new ForbiddenException(
+          `Вы не можете изменить статус проекта на '${ProjectStatus.APPROVED}', пока все участники не выставят его`,
+        );
+      }
+    } else {
+      return this._findOneAndUpdate(
+        {
+          _id: documentStatus.projectId,
+          ownerId: userId,
+        },
+        { $set: { status: documentStatus.status } },
+      );
     }
 
-    return prj;
+    // const prj = await this._findOneAndUpdate(
+    // return this._findOneAndUpdate(
+    //   {
+    //     _id: documentStatus.projectId,
+    //     ownerId: userId,
+    //   },
+    //   { $set: { status: documentStatus.status } },
+    // );
+
+    // if (prj) {
+    //   const comment: CreateCommentDto = {
+    //     projectId: documentStatus.projectId,
+    //     message: documentStatus.message,
+    //     status: documentStatus.status,
+    //   };
+    //   this.commentService.create(userId, comment);
+
+    //   // const status = prj.coordinationUsers.reduce(
+    //   //   (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
+    //   //   true,
+    //   // );
+    //   // return status && prj.set('status', ProjectStatus.APPROVED);
+    // }
+
+    // return prj;
   }
 
   async addDecision(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
-    const prj = await this._findOneAndUpdate(
+    // const prj = await this._findOneAndUpdate(
+    return this._findOneAndUpdate(
       {
         _id: documentStatus.projectId,
         ['coordinationUsers.userId']: userId,
       },
-      { $set: { 'coordinationUsers.$.settedStatus': documentStatus.status } },
+      {
+        $set: {
+          'coordinationUsers.$.settedStatus': documentStatus.status,
+          'coordinationUsers.$.message': documentStatus.message,
+        },
+      },
     );
 
-    if (prj) {
-      const comment: CreateCommentDto = {
-        projectId: documentStatus.projectId,
-        message: documentStatus.message,
-        status: documentStatus.status,
-      };
-      this.commentService.create(userId, comment);
+    // if (prj) {
+    //   const comment: CreateCommentDto = {
+    //     projectId: documentStatus.projectId,
+    //     message: documentStatus.message,
+    //     status: documentStatus.status,
+    //   };
+    //   this.commentService.create(userId, comment);
 
-      // const status = prj.coordinationUsers.reduce(
-      //   (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
-      //   true,
-      // );
-      // return status && prj.set('status', ProjectStatus.APPROVED);
-    }
+    //   // const status = prj.coordinationUsers.reduce(
+    //   //   (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
+    //   //   true,
+    //   // );
+    //   // return status && prj.set('status', ProjectStatus.APPROVED);
+    // }
 
-    return prj;
+    // return prj;
   }
 
   async update(
@@ -193,23 +230,21 @@ export class ProjectService {
     projectId: ObjectId,
     updateProjectDto: UpdateProjectDto,
   ) {
-    const prj = await this.projectModel.findOne({
-      _id: projectId,
-      ownerId: userId,
-    });
-
-    const users = prj.coordinationUsers;
-    if (users.length) {
-      const diffUsers: CoordinationUser[] = findDiff(
-        users,
-        updateProjectDto.coordinationUsers,
-        (a: CoordinationUser, b: CoordinationUser) =>
-          JSON.stringify(a.userId) === JSON.stringify(b.userId),
-      );
-
-      diffUsers.length &&
-        this.commentService.delMany(diffUsers.map((el) => el.userId));
-    }
+    // const prj = await this.projectModel.findOne({
+    //   _id: projectId,
+    //   ownerId: userId,
+    // });
+    // const users = prj.coordinationUsers;
+    // if (users.length) {
+    //   const diffUsers: CoordinationUser[] = findDiff(
+    //     users,
+    //     updateProjectDto.coordinationUsers,
+    //     (a: CoordinationUser, b: CoordinationUser) =>
+    //       JSON.stringify(a.userId) === JSON.stringify(b.userId),
+    //   );
+    //   diffUsers.length &&
+    //     this.commentService.delMany(diffUsers.map((el) => el.userId));
+    // }
 
     return this._findOneAndUpdate(
       { _id: projectId, ownerId: userId },

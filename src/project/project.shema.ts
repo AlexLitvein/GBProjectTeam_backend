@@ -20,6 +20,10 @@ export class CoordinationUser {
   @ApiProperty({ enum: UserDecision, required: false })
   @IsEnum(UserDecision)
   settedStatus: UserDecision;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  message: string;
 }
 
 export type ProjectDocument = Project & Document;
@@ -81,6 +85,7 @@ export class Project {
           ref: 'User',
         },
         settedStatus: { type: String, default: UserDecision.NONE },
+        message: { type: String, default: '' },
       },
     ],
   })
@@ -89,7 +94,7 @@ export class Project {
   @ApiProperty({ required: false, enum: ProjectStatus })
   @IsEnum(ProjectStatus)
   @IsOptional()
-  @Prop({ default: ProjectStatus.DRAFT })
+  @Prop({ default: ProjectStatus.IN_PROGRESS })
   status: ProjectStatus;
 
   @Prop({ select: false })
