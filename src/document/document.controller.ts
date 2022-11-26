@@ -8,6 +8,8 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  ForbiddenException,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -16,9 +18,12 @@ import {
   ApiBody,
   ApiParam,
   ApiConsumes,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { GetUser } from 'auth/decorator';
 import { ApiErrorDto } from 'error/dto/apiError.dto';
+import { ApiException } from 'files/api-exception.model';
+import { FilesService } from 'files/files.service';
 import { ObjectId } from 'mongoose';
 import { ParseObjectIdPipe } from 'validators/mongo';
 import { DocumentService } from './document.service';
@@ -32,7 +37,10 @@ import { CreateDocumentDto, DocumDto, UpdateDocumentDto } from './dto';
 })
 @Controller('documents')
 export class DocumentController {
-  constructor(private readonly documentService: DocumentService) {}
+  constructor(
+    private readonly documentService: DocumentService,
+    private filesService: FilesService,
+  ) {}
 
   // ======== create ==========
   // @ApiParam({
@@ -104,6 +112,41 @@ export class DocumentController {
     @Body() updateDocumentDto: UpdateDocumentDto,
   ) {
     return this.documentService.update(id, updateDocumentDto);
+  }
+
+  @Get('getfile/:id')
+  @ApiParam({
+    name: 'id',
+    description: 'id документа',
+  })
+  @ApiBadRequestResponse({ type: ApiException })
+  async getDocFile(@Param('id') id: ObjectId, @Res() res) {
+    const { attachedFileId: fileId } = await this.documentService.findOne(id);
+    const file = await this.filesService.findInfo(fileId);
+    const filestream = await this.filesService.readStream(fileId);
+    if (!filestream) {
+      throw new ForbiddenException('An error occurred while retrieving file');
+    }
+    res.header('Content-Type', file.contentType);
+    return filestream.pipe(res);
+  }
+
+  @Get('downloadfile/:id')
+  @ApiParam({
+    name: 'id',
+    description: 'id документа',
+  })
+  @ApiBadRequestResponse({ type: ApiException })
+  async downloadDocFile(@Param('id') id: ObjectId, @Res() res) {
+    const { attachedFileId: fileId } = await this.documentService.findOne(id);
+    const file = await this.filesService.findInfo(fileId);
+    const filestream = await this.filesService.readStream(fileId);
+    if (!filestream) {
+      throw new ForbiddenException('An error occurred while retrieving file');
+    }
+    res.header('Content-Type', file.contentType);
+    res.header('Content-Disposition', 'attachment; filename=' + file.filename);
+    return filestream.pipe(res);
   }
 
   // @Get()
