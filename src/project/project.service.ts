@@ -9,7 +9,7 @@ import {
   SetDocumentStatusDto,
   UpdateProjectDto,
 } from 'project/dto';
-import { ProjectStatus } from 'types';
+import { ProjectStatus, UserDecision } from 'types';
 import { findDiff } from 'utils';
 import {
   CoordinationUser,
@@ -40,7 +40,7 @@ export class ProjectService {
       })
       .populate({
         path: projectProxy.documentsIds.toString(),
-        select: ['attachedFileName'],
+        select: ['attachedFileName', 'attachedFileId'],
       })
       .populate({
         path: projectProxy.ownerId.toString(),
@@ -50,11 +50,10 @@ export class ProjectService {
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   private async _findOneAndUpdate(filter: Object, update: Object) {
-    const prj = await this.projectModel
-      .findOneAndUpdate(filter, update, {
-        new: true,
-      })
-      .set({ status: ProjectStatus.IN_PROGRESS });
+    const prj = await this.projectModel.findOneAndUpdate(filter, update, {
+      new: true,
+    });
+    // .set({ status: ProjectStatus.IN_PROGRESS });
 
     if (prj) {
       return prj;
@@ -139,59 +138,33 @@ export class ProjectService {
   }
 
   async changeStatus(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
-    if (documentStatus.status === ProjectStatus.APPROVED) {
-      const prj = await this.projectModel.findOneAndUpdate(
-        {
-          _id: documentStatus.projectId,
-          ownerId: userId,
-          'coordinationUsers.settedStatus': { $all: [ProjectStatus.APPROVED] },
-        },
-        { $set: { status: documentStatus.status } },
-        { new: true },
-      );
+    const prj = await this.projectModel.findOne({
+      _id: documentStatus.projectId,
+      ownerId: userId,
+    });
 
-      if (prj) {
-        return prj;
-      } else {
-        throw new ForbiddenException(
-          `Вы не можете изменить статус проекта на '${ProjectStatus.APPROVED}', пока все участники не выставят его`,
+    if (prj) {
+      if (documentStatus.status === ProjectStatus.APPROVED) {
+        const isApprove = prj.coordinationUsers.reduce(
+          (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
+          true,
         );
+
+        if (!isApprove) {
+          throw new ForbiddenException(
+            `Вы не можете изменить статус проекта на '${ProjectStatus.APPROVED}', пока все участники не выставят его`,
+          );
+        }
       }
-    } else {
-      return this._findOneAndUpdate(
-        {
-          _id: documentStatus.projectId,
-          ownerId: userId,
-        },
-        { $set: { status: documentStatus.status } },
-      );
     }
 
-    // const prj = await this._findOneAndUpdate(
-    // return this._findOneAndUpdate(
-    //   {
-    //     _id: documentStatus.projectId,
-    //     ownerId: userId,
-    //   },
-    //   { $set: { status: documentStatus.status } },
-    // );
-
-    // if (prj) {
-    //   const comment: CreateCommentDto = {
-    //     projectId: documentStatus.projectId,
-    //     message: documentStatus.message,
-    //     status: documentStatus.status,
-    //   };
-    //   this.commentService.create(userId, comment);
-
-    //   // const status = prj.coordinationUsers.reduce(
-    //   //   (acc, el) => (acc &&= el.settedStatus === UserDecision.APPROVED),
-    //   //   true,
-    //   // );
-    //   // return status && prj.set('status', ProjectStatus.APPROVED);
-    // }
-
-    // return prj;
+    return this._findOneAndUpdate(
+      {
+        _id: documentStatus.projectId,
+        ownerId: userId,
+      },
+      { $set: { status: documentStatus.status } },
+    );
   }
 
   async addDecision(userId: ObjectId, documentStatus: SetDocumentStatusDto) {
