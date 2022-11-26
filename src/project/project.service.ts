@@ -220,10 +220,13 @@ export class ProjectService {
     //   diffUsers.length &&
     //     this.commentService.delMany(diffUsers.map((el) => el.userId));
     // }
+      
+    const upd = { ...updateProjectDto, status: ProjectStatus.IN_PROGRESS };
 
     return this._findOneAndUpdate(
       { _id: projectId, ownerId: userId },
-      updateProjectDto,
+      // updateProjectDto,
+      upd,
     );
   }
 
