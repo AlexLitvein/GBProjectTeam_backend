@@ -11,6 +11,7 @@ import {
   Res,
   HttpException,
   HttpStatus,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -129,14 +130,12 @@ export class UserController {
       const file = await this.filesService.findInfo(user.avatar);
       const filestream = await this.filesService.readStream(user.avatar);
       if (!filestream) {
-        throw new HttpException(
-          'An error occurred while retrieving file',
-          HttpStatus.EXPECTATION_FAILED,
-        );
+        throw new ForbiddenException('An error occurred while retrieving file');
       }
       res.header('Content-Type', file.contentType);
       return filestream.pipe(res);
     } else {
+      throw new ForbiddenException('Аватар не обнаружен');
     }
   }
 }
