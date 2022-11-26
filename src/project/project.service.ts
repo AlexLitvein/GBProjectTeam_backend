@@ -129,7 +129,6 @@ export class ProjectService {
         $gte: filter.deadlineAfter,
         $lte: filter.deadlineBefore,
       };
-    console.log('criteria', criteria);
     return this._find(criteria);
   }
 
@@ -220,7 +219,7 @@ export class ProjectService {
     //   diffUsers.length &&
     //     this.commentService.delMany(diffUsers.map((el) => el.userId));
     // }
-      
+
     const upd = { ...updateProjectDto, status: ProjectStatus.IN_PROGRESS };
 
     return this._findOneAndUpdate(

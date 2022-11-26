@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Docum, DocumSchema } from './document.shema';
 import { MulterModule } from '@nestjs/platform-express';
 import { GridFsMulterConfigService } from 'files/multer-config.service';
+import { FilesService } from 'files/files.service';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { GridFsMulterConfigService } from 'files/multer-config.service';
     }),
   ],
   controllers: [DocumentController],
-  providers: [GridFsMulterConfigService, DocumentService],
+  providers: [GridFsMulterConfigService, DocumentService, FilesService],
 })
 export class DocumentModule {}

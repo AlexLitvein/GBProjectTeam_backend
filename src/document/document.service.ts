@@ -19,9 +19,9 @@ export class DocumentService {
   //   return `This action returns all document`;
   // }
 
-  // async findOne(id: number) {
-  //   return `This action returns a #${id} document`;
-  // }
+  async findOne(id: ObjectId): Promise<DocumDto> {
+    return await this.documModel.findById(id);
+  }
 
   async findMany(projectId: ObjectId) {
     return this.documModel.find({ projectId: projectId });
