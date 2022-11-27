@@ -138,14 +138,18 @@ export class DocumentController {
   })
   @ApiBadRequestResponse({ type: ApiException })
   async downloadDocFile(@Param('id') id: ObjectId, @Res() res) {
-    const { attachedFileId: fileId } = await this.documentService.findOne(id);
+    const { attachedFileId: fileId, attachedFileName } =
+      await this.documentService.findOne(id);
     const file = await this.filesService.findInfo(fileId);
     const filestream = await this.filesService.readStream(fileId);
     if (!filestream) {
       throw new ForbiddenException('An error occurred while retrieving file');
     }
     res.header('Content-Type', file.contentType);
-    res.header('Content-Disposition', 'attachment; filename=' + file.filename);
+    res.header(
+      'Content-Disposition',
+      'attachment; filename=' + attachedFileName,
+    );
     return filestream.pipe(res);
   }
 
