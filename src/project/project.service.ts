@@ -77,7 +77,7 @@ export class ProjectService {
   // INFO: {$or:[{ownerId: ObjectId('63393710a6ca510e36fdd894')}, {coordinationUsersIds: ObjectId('63393710a6ca510e36fdd894')}]}
   findAllWhereUser(id: ObjectId) {
     return this._find({
-      status: { $ne: ProjectStatus.DRAFT },
+      status: { $in: [ProjectStatus.IN_PROGRESS, ProjectStatus.FREEZED] },
       $or: [
         { ownerId: id },
         { [`${projectProxy.coordinationUsers}.userId`]: id },
